@@ -86,8 +86,10 @@ st.markdown(f"""
     [data-testid="stSidebar"] h6,
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span {{
-        color: white !important; 
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] div,
+    [data-testid="stSidebar"] *{{
+        color: {GOLD_COLOR} !important; 
         font-weight: 600 !important; 
     }}
     
@@ -627,15 +629,200 @@ if calculate_btn:
         st.error(f"❌ Error: {str(e)}")
 
 # Display results
-if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_table is not None and len(st.session_state.dilution_table) > 0:
+st.write("")
+st.write("---")
+st.subheader("📊 Cap Table Results")
+
+tab_about, tab1, tab2, tab3, tab4, tab_educational = st.tabs([
+    "ℹ️ About", 
+    "📊 With Dilution", 
+    "🔄 Pro-Rata Protected", 
+    "⚖️ Comparison", 
+    "📈 Insights",
+    "📚 Educational"
+])
+
+# Check if results exist
+has_results = hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_table is not None and len(st.session_state.dilution_table) > 0
+
+if has_results:
     dilution_table = st.session_state.dilution_table
     prorata_table = st.session_state.prorata_table
     
-    st.write("")
-    st.write("---")
-    st.subheader("📊 Cap Table Results")
-    
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 With Dilution", "🔄 Pro-Rata Protected", "⚖️ Comparison", "📈 Insights"])
+    # ABOUT TAB
+    with tab_about:
+        st.markdown(f"""
+        # 📖 About Cap Table Simulator Pro
+        
+        ## What is a Cap Table?
+        
+        A **Cap Table (Capitalization Table)** is a spreadsheet that shows the ownership structure of a startup at any point in time.
+        It lists all shareholders, their share counts, and their ownership percentages.
+        
+        ### Key Components:
+        - **Founders:** Original owners who started the company
+        - **Investors:** VCs, angels, and institutions who fund the company
+        - **Employees:** May hold options or shares via ESOP
+        - **Ownership %:** Each party's stake in the company
+        
+        ---
+        
+        ## What is Dilution?
+        
+        **Dilution** is the reduction in ownership percentage that occurs when a company issues new shares.
+        
+        ### How It Works:
+        ```
+        Example: Founder owns 10M shares (100%)
+        
+        Series A: Company issues 2.625M new shares
+        
+        Total shares now: 12.625M
+        
+        Founder's % = 10M / 12.625M = 79.25%
+        Series A investor: 2.625M / 12.625M = 20.75%
+        ```
+        
+        **Key Insight:** The founder's share count didn't change (still 10M), but their ownership % dropped from 100% to 79.25%.
+        
+        ---
+        
+        ## What are Pro-Rata Rights?
+        
+        **Pro-Rata Rights** give an investor the right (but not obligation) to participate in future funding rounds 
+        in proportion to their current ownership stake.
+        
+        ### Example:
+        - You own 20% after Seed round
+        - Series A sells 20% new equity to Series A investors
+        - With pro-rata: You can invest to buy 20% of that new 20% = 4% of company
+        - Result: You maintain your 20% ownership
+        
+        **Without Pro-Rata:** Your ownership would drop to ~16%
+        
+        ---
+        
+        ## How This App Works
+        
+        ### Two Scenarios:
+        
+        **1. WITH DILUTION (Standard):**
+        - New investors get their shares
+        - All existing shareholders diluted equally
+        - Simple math: each new round dilutes everyone
+        
+        **2. PRO-RATA PROTECTED:**
+        - Early investors can exercise pro-rata rights
+        - They get bonus shares to maintain ownership %
+        - More realistic VC scenario
+        
+        ### What You Can Do:
+        
+        ✅ **Set Configuration:**
+        - Number of funding rounds (1-10)
+        - Founder's initial share count (1M-100M)
+        
+        ✅ **View Results:**
+        - Dilution scenarios side-by-side
+        - Ownership percentages across all shareholders
+        - Share counts and valuations
+        
+        ✅ **Compare:**
+        - See difference between dilution and pro-rata
+        - Understand founder protection
+        - Analyze shareholder impact
+        
+        ---
+        
+        ## Key Formulas (Simplified)
+        
+        ### Dilution Formula:
+        ```
+        New Ownership % = Old Ownership % × (1 - Dilution %)
+        ```
+        
+        ### Pro-Rata Formula:
+        ```
+        To maintain ownership p% when new equity s% is issued:
+        Investor must buy: p% × s% of new shares
+        Result: Ownership stays at p%
+        ```
+        
+        ### Founder Dilution (always same):
+        ```
+        Founder % = (1 - Dilution %) ^ Number of Rounds
+        
+        Example: 3 rounds at 20% dilution each
+        Founder = (0.8)³ = 51.2%
+        ```
+        
+        ---
+        
+        ## Important Insights
+        
+        ### 1. Founder Dilution is Inevitable
+        - Whether there's pro-rata or not, founders get diluted
+        - This is how companies fund growth
+        - Pro-rata doesn't protect founders, it protects investors
+        
+        ### 2. Pro-Rata Controls WHO Gets the Equity
+        - Not WHETHER dilution happens
+        - Example: Seed investor gets 20% vs 12.8% after Series A
+        - But founder gets diluted same amount in both cases
+        
+        ### 3. Each Round Tells a Story
+        - Formation: 100% founder
+        - Seed: Founder diluted, new investor enters
+        - Series A: Both diluted, new investor enters
+        - Series B+: Further dilution, more players
+        
+        ---
+        
+        ## Real-World Application
+        
+        ### Why This Matters:
+        
+        **For Founders:**
+        - Understand how much control you'll lose each round
+        - Plan for future fundraising impact
+        - Negotiate pro-rata protections for key investors
+        
+        **For Investors:**
+        - See how your ownership changes
+        - Decide whether to exercise pro-rata
+        - Understand control implications
+        
+        **For Employees:**
+        - Know the company's cap table
+        - Understand option pool impact
+        - Estimate future dilution of equity
+        
+        ---
+        
+        ## About The Mountain Path
+        
+        **The Mountain Path - World of Finance** provides advanced financial education for:
+        - MBA students
+        - CFA candidates  
+        - FRM professionals
+        - Startup founders
+        - VC professionals
+        
+        **Prof. V. Ravichandran**
+        - 28+ Years Corporate Finance & Banking
+        - 10+ Years Academic Excellence
+        - Expert in VC Finance, Risk Management, Financial Modeling
+        
+        ---
+        
+        ## Next Steps
+        
+        1. **Configure your scenario** in the sidebar
+        2. **Click Calculate** to run the analysis
+        3. **View results** in the tabs
+        4. **Compare scenarios** to understand implications
+        5. **Learn more** in the Educational tab
+        """)
     
     with tab1:
         st.subheader("📊 Cap Table with Dilution Scenario")
@@ -891,6 +1078,382 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             st.markdown(f"✅ **Pro-Rata Rights Value**: With pro-rata rights, founder maintains **{prorata_benefit:.2f}%** more ownership.")
         st.markdown(f"📊 **Final Valuation**: Company valued at **${final_dilution_row.get('Post-Money ($M)', 0):.1f}M** after all rounds.")
         st.markdown(f"👥 **Founder vs Investors**: Founder has **{final_dilution_founder:.2f}%**, others have **{100-final_dilution_founder:.2f}%**.")
+    
+    # EDUCATIONAL TAB
+    with tab_educational:
+        st.markdown("""
+        # 📚 Educational Hub: Cap Table Mathematics & Pro-Rata Rights
+        
+        ## Understanding the Mathematics Behind Cap Tables
+        
+        This section provides the mathematical foundations for understanding cap table dilution 
+        and pro-rata rights. Learn the formulas, see detailed examples, and understand why pro-rata 
+        rights are valuable for investors (but not founders).
+        
+        ---
+        
+        ## 1. FUNDAMENTALS: Understanding Cap Table Dilution
+        
+        ### What is Cap Table Dilution?
+        
+        **Definition:** Cap table dilution is the reduction in ownership percentage that occurs when 
+        a company issues new shares in subsequent funding rounds.
+        
+        **The Key Mechanism:**
+        - Each new funding round introduces new shares
+        - These new shares become part of the company's total outstanding shares
+        - Existing shareholders' percentages are mathematically reduced
+        
+        **Why This Matters:**
+        - As a company raises multiple rounds, early investors' ownership shrinks
+        - Without action, their control and voting power diminish
+        - Founders face increasing dilution
+        - This is why pro-rata rights exist—to allow investors to maintain ownership by participating in subsequent rounds
+        
+        ---
+        
+        ### What is a Pro-Rata Right?
+        
+        **Definition:** Pro-rata rights give an investor the right (but not obligation) to participate 
+        in future funding rounds in proportion to their current ownership stake.
+        
+        **In simple terms:** If you own 20% of the company, you have the right to invest in the next 
+        round to maintain that 20% ownership.
+        
+        **Critical word:** RIGHT not obligation. The investor chooses whether to exercise it.
+        
+        ---
+        
+        ## 2. THE CORE MATHEMATICS
+        
+        ### Master Formula: Pro-Rata Preservation
+        
+        To maintain ownership percentage **p%** in a round that sells **s%** new equity:
+        
+        ```
+        Amount to Invest = p% × s% × Post-Money Valuation
+        ```
+        
+        **Simplified Result:**
+        ```
+        Ownership Maintained = p% (if you buy p × s each round)
+        ```
+        
+        ### Founder Dilution Formula
+        
+        Founders (who don't buy pro-rata) experience dilution using:
+        
+        ```
+        Founder % after n rounds = (1 - s)^n
+        ```
+        
+        Where:
+        - s = fraction of post-money equity sold per round
+        - n = number of rounds
+        
+        **Example: 3 rounds at 20% dilution each:**
+        ```
+        Founder % = (1 - 0.20)³ = (0.8)³ = 51.2%
+        ```
+        
+        ---
+        
+        ## 3. DETAILED THREE-ROUND EXAMPLE
+        
+        ### Setup: Three Rounds at 20% Each
+        
+        **Initial State:**
+        - Founder owns 100%
+        - Company raises Seed, Series A, Series B
+        - Each round sells 20% post-money equity
+        
+        ### Case 1: WITH DILUTION (No Follow-On Investment)
+        
+        **After Seed Round (20% sold):**
+        ```
+        Founder = 100% × (1 - 0.20) = 80.0%
+        Seed Investor = 20.0% (new issue)
+        ```
+        
+        **After Series A (20% of new post-money):**
+        ```
+        Founder = 80% × (1 - 0.20) = 64.0%
+        Seed Investor = 20% × (1 - 0.20) = 16.0%
+        Series A = 20.0% (new issue)
+        ```
+        
+        **After Series B (20% of new post-money):**
+        ```
+        Founder = 64% × (1 - 0.20) = 51.2%
+        Seed Investor = 16% × (1 - 0.20) = 12.8%
+        Series A = 20% × (1 - 0.20) = 16.0%
+        Series B = 20.0% (new issue)
+        ```
+        
+        ### Case 2: WITHOUT DILUTION (With Pro-Rata Rights)
+        
+        **Key Rule:** To maintain 20% ownership when a round sells 20%, must buy:
+        ```
+        20% × 20% = 4% of post-money
+        ```
+        
+        **After Seed Round:**
+        ```
+        Founder = 80.0%
+        Seed Investor = 20.0%
+        ```
+        
+        **After Series A (Seed invests 4% of post-money):**
+        ```
+        Founder = 80% × (1 - 0.20) = 64.0%
+        Seed Investor = 20.0% (maintained via pro-rata)
+        Series A = 16.0% (remainder of 20%)
+        ```
+        
+        **Why does Seed stay at 20%?**
+        - Seed owned 20% and needs to maintain it
+        - Round sells 20% total new equity
+        - Seed's pro-rata = 20% × 20% = 4% new
+        - Seed now owns 20% + 4% = 24% of 120% = 20% ✓
+        
+        **After Series B (Seed invests another 4% of post-money):**
+        ```
+        Founder = 64.0% × (1 - 0.20) = 51.2%
+        Seed Investor = 20.0% (maintained again)
+        Series A = 16.0% × (1 - 0.20) = 12.8%
+        Series B = 16.0% (remainder of 20%)
+        ```
+        
+        ---
+        
+        ## 4. SIDE-BY-SIDE COMPARISON
+        
+        ### Ownership Percentages: With vs Without Dilution
+        
+        | Round | Holder | With Dilution | Without Dilution | Difference |
+        |-------|--------|---------------|------------------|-----------|
+        | Start | Founder | 100.0% | 100.0% | 0% |
+        | Seed | Founder | 80.0% | 80.0% | 0% |
+        | | Seed | 20.0% | 20.0% | 0% |
+        | Series A | Founder | 64.0% | 64.0% | 0% |
+        | | Seed | 16.0% | 20.0% | +4.0% |
+        | | Series A | 20.0% | 16.0% | -4.0% |
+        | Series B | Founder | 51.2% | 51.2% | 0% |
+        | | Seed | 12.8% | 20.0% | +7.2% |
+        | | Series A | 16.0% | 12.8% | -3.2% |
+        | | Series B | 20.0% | 16.0% | -4.0% |
+        
+        ### Key Observations:
+        
+        ✅ **Founder ownership identical in both cases (51.2%)**
+        - Pro-rata rights don't protect founders!
+        
+        ✅ **Seed investor protected to 20% with pro-rata rights**
+        - Without pro-rata: drops to 12.8%
+        - With pro-rata: maintains 20.0%
+        
+        ✅ **Later-round investors get smaller stakes with pro-rata**
+        - Series A/B investors bear the cost of Seed's pro-rata rights
+        
+        ✅ **Total ownership always equals 100%**
+        - Math always balances
+        
+        ---
+        
+        ## 5. CRITICAL INSIGHTS
+        
+        ### Does Pro-Rata Protect Founders?
+        
+        **Answer: NO.**
+        
+        Pro-rata rights protect INVESTORS, not founders.
+        
+        In both Case 1 (with dilution) and Case 2 (without dilution):
+        - Founder ownership falls from 100% to 51.2%
+        - Dilution percentage is identical: (0.8)³ = 51.2%
+        - Founders bear the same burden in both scenarios
+        
+        **What differs:**
+        - WHO gets the new equity (Seed vs later investors)
+        - NOT how much dilution happens
+        
+        ### What Pro-Rata Controls
+        
+        Pro-rata rights control:
+        - ✅ WHO owns the equity founders give up
+        - ❌ NOT how much dilution happens
+        
+        **Impact:**
+        - **With Pro-Rata:** Early investor stays involved & controls their stake (20%)
+        - **Without Pro-Rata:** Early investor fades (12.8%), later investors grow
+        - **Founder Dilution:** Same either way (51.2%)
+        
+        **Why it matters:** Pro-rata rights are valuable for investors, not founders.
+        
+        ---
+        
+        ## 6. PRACTICAL IMPLICATIONS
+        
+        ### For Different Stakeholders:
+        
+        **Founders:**
+        - Dilution is inevitable with each round
+        - Pro-rata doesn't affect founder dilution directly
+        - But pro-rata investors remain strong voices (may be good or bad)
+        
+        **Seed Investors:**
+        - Pro-rata rights maintain control and influence
+        - But requires capital commitment in each subsequent round
+        - Decision: "Do I want to stay involved with this company?"
+        
+        **Series A/B Investors:**
+        - Early investors' pro-rata means smaller stakes for you
+        - But also means early investors stay committed
+        - May provide valuable guidance and networks
+        
+        **Employees:**
+        - More dilution = option pool becomes less valuable
+        - Pro-rata vs non-pro-rata doesn't matter for employees directly
+        - What matters is total dilution and vesting schedules
+        
+        ---
+        
+        ## 7. KEY TAKEAWAYS
+        
+        ### The Most Important Insights:
+        
+        1️⃣ **Founder Dilution is Independent**
+           - Happens through formula: Founder% = (1-s)^n
+           - Independent of whether early investors exercise pro-rata
+           
+        2️⃣ **Pro-Rata is About Control, Not Protection**
+           - For founders: Same dilution either way
+           - For investors: Maintains control and voting power
+           
+        3️⃣ **Economics of Pro-Rata**
+           - With Pro-Rata: Early investor maintains 20%, later investors get less
+           - Without Pro-Rata: Early investor fades to 12.8%, later investors get more
+           
+        4️⃣ **The Real Decision**
+           - "Do we want early investors as ongoing strong partners?"
+           - If YES → Support pro-rata rights
+           - If NO → Let them dilute with future rounds
+        
+        ---
+        
+        ## 8. FORMULAS REFERENCE
+        
+        ### Master Formulas:
+        
+        **Pro-Rata Rights Master Formula:**
+        ```
+        To maintain ownership p% in a round that sells s%:
+        Invest = p% × s% × Post-Money Valuation
+        
+        Simplified:
+        Ownership Maintained = p% (if you buy p×s each round)
+        
+        For constant ownership across n rounds:
+        Ownership_n = p% (constant)
+        ```
+        
+        **Founder (No Pro-Rata):**
+        ```
+        Founder_n = (1 - s)^n
+        
+        Where:
+        s = fraction of post-money sold per round
+        n = number of rounds
+        ```
+        
+        ### Application Example: 20% Per Round
+        
+        **Pro-Rata Buy Amount Each Round:**
+        ```
+        p × s = 0.20 × 0.20 = 0.04 = 4%
+        
+        Investor maintains 20% if they buy 4% of post-money each round
+        ```
+        
+        **Founder Always Experiences:**
+        ```
+        Founder = (0.8)³ = 51.2%
+        
+        Regardless of investor pro-rata choice
+        ```
+        
+        ---
+        
+        ## 9. ABOUT THE MATERIAL
+        
+        This educational content is based on **"Pro-Rata Rights & Cap Table Dilution"** 
+        from **The Mountain Path - World of Finance**.
+        
+        **Creator:** Prof. V. Ravichandran
+        - 28+ Years Corporate Finance & Banking Experience
+        - 10+ Years Academic Excellence
+        - Specializing in VC Finance, Financial Modeling, and Risk Management
+        
+        **Purpose:** Bridging theory with practical application for:
+        - MBA students
+        - CFA candidates
+        - FRM professionals
+        - Startup founders and investors
+        
+        ---
+        """)
+
+else:
+    # Show message when no results yet
+    with tab_about:
+        st.info("👈 **Configure your inputs in the sidebar and click 'Calculate' to see the analysis**")
+        st.markdown("""
+        ### Quick Start Guide:
+        
+        1. **Set Number of Rounds** (1-10)
+        2. **Adjust Founder's Initial Shares** (1M-100M)
+        3. **Enter funding round details** (Pre-Money Valuation & Investment)
+        4. **Click Calculate button**
+        5. **View results** in the tabs
+        
+        All tabs will populate with data once you run the analysis!
+        """)
+    
+    with tab1:
+        st.info("👈 Click Calculate to see Dilution analysis")
+    
+    with tab2:
+        st.info("👈 Click Calculate to see Pro-Rata analysis")
+    
+    with tab3:
+        st.info("👈 Click Calculate to see Comparison")
+    
+    with tab4:
+        st.info("👈 Click Calculate to see Insights")
+    
+    with tab_educational:
+        st.markdown("""
+        # 📚 Educational Hub: Cap Table Mathematics & Pro-Rata Rights
+        
+        This educational section is always available for learning, regardless of whether you have run calculations.
+        
+        ## Understanding the Mathematics Behind Cap Tables
+        
+        This section provides the mathematical foundations for understanding cap table dilution 
+        and pro-rata rights. Learn the formulas, see detailed examples, and understand why pro-rata 
+        rights are valuable for investors (but not founders).
+        
+        ### Ready to learn?
+        
+        Explore the sections below to understand:
+        - **Fundamentals:** What are cap tables and dilution?
+        - **Mathematics:** Master formulas explained
+        - **Examples:** Detailed 3-round scenario
+        - **Insights:** Critical findings about pro-rata
+        - **Applications:** Real-world implications
+        
+        Then, configure your scenario in the sidebar and click Calculate to see these concepts in action!
+        """)
 
 # Footer
 st.divider()
