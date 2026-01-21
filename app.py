@@ -24,20 +24,126 @@ import plotly.express as px
 # ============================================================================
 
 st.set_page_config(
-    page_title="Cap Table Simulator Pro",
+    page_title="Cap Table Simulator Pro - The Mountain Path",
     page_icon="🏔️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================================
+# COLOR SCHEME & BRANDING
+# ============================================================================
+
+DARK_BLUE = "#003366"
+LIGHT_BLUE = "#0066CC"
+GOLD_COLOR = "#FFD700"
+BRAND_NAME = "The Mountain Path - World of Finance"
+
+# ============================================================================
+# PROFESSIONAL CSS STYLING
+# ============================================================================
+st.markdown(f"""
+    <style>
+    /* Hero Title - Gradient Background */
+    .hero-title {{ 
+        background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%); 
+        padding: 2.5rem; 
+        border-radius: 20px; 
+        margin: 1rem 0; 
+        box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3); 
+        border: 3px solid {DARK_BLUE}; 
+        color: white; 
+        text-align: center; 
+    }}
+    
+    .hero-title h1 {{ 
+        margin: 0.5rem 0; 
+        font-size: 2.5rem; 
+        font-weight: 900;
+        letter-spacing: 2px;
+    }}
+    
+    .hero-title p {{ 
+        margin: 0.3rem 0; 
+        font-size: 1rem; 
+        font-weight: 500;
+    }}
+    
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {{ 
+        background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%) !important; 
+    }}
+    
+    [data-testid="stSidebar"] > div > div:first-child {{ 
+        background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%) !important;
+    }}
+    
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4,
+    [data-testid="stSidebar"] h5,
+    [data-testid="stSidebar"] h6,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span {{
+        color: white !important; 
+        font-weight: 600 !important; 
+    }}
+    
+    /* Button Styling */
+    .stButton > button {{ 
+        background: linear-gradient(135deg, {GOLD_COLOR} 0%, #FFC700 100%) !important; 
+        color: {DARK_BLUE} !important; 
+        font-weight: 700 !important; 
+        border-radius: 10px !important; 
+        width: 100%; 
+        border: 2px solid {DARK_BLUE} !important;
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3) !important;
+        padding: 12px 24px !important;
+        transition: all 0.3s ease !important;
+    }}
+    
+    .stButton > button:hover {{
+        background: linear-gradient(135deg, #FFC700 0%, {GOLD_COLOR} 100%) !important;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5) !important;
+        transform: translateY(-2px) !important;
+    }}
+    
+    /* Footer */
+    .footer {{
+        text-align: center; 
+        color: #666; 
+        padding: 2rem 1rem;
+        border-top: 2px solid {DARK_BLUE};
+        margin-top: 3rem;
+        font-size: 13px;
+    }}
+    
+    .footer p {{
+        margin: 0.5rem 0;
+    }}
+    
+    /* Tab Styling */
+    [data-testid="stTabs"] button {{
+        font-weight: 600;
+    }}
+    
+    [data-testid="stTabs"] button[aria-selected="true"] {{
+        color: {DARK_BLUE} !important;
+        border-bottom: 3px solid {GOLD_COLOR} !important;
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
+# ============================================================================
 # CONSTANTS
 # ============================================================================
 
 COLOR_SCHEME = {
-    "dark_blue": "#003366",
-    "light_blue": "#004d80",
-    "gold": "#FFD700",
+    "dark_blue": DARK_BLUE,
+    "light_blue": LIGHT_BLUE,
+    "gold": GOLD_COLOR,
     "success": "#00d084",
     "warning": "#ff9800",
     "error": "#ff4444",
@@ -322,32 +428,14 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
 # ============================================================================
 
 def render_header():
-    """Render main header"""
-    col1, col2 = st.columns([1, 3])
-    
-    with col1:
-        st.markdown(f"""
-        <div style='text-align: center; padding: 20px;'>
-            <h1 style='color: {COLOR_SCHEME["dark_blue"]}; font-size: 48px; margin: 0;'>
-            🏔️
-            </h1>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown(f"""
-        <div style='padding: 20px;'>
-            <h1 style='color: {COLOR_SCHEME["dark_blue"]}; margin: 0;'>
-            Cap Table Simulator Pro
-            </h1>
-            <p style='color: {COLOR_SCHEME["light_blue"]}; font-size: 16px; margin: 5px 0;'>
-            Professional Startup Equity Analysis Dashboard
-            </p>
-            <p style='color: #666; font-size: 12px; margin: 5px 0;'>
-            Prof. V. Ravichandran | 28+ Years Corporate Finance & Banking | 10+ Years Academic Excellence
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+    """Render professional hero title header"""
+    st.markdown(f"""
+    <div class='hero-title'>
+        <h1>CAP TABLE SIMULATOR PRO</h1>
+        <p>Professional Startup Equity Analysis Dashboard</p>
+        <p>Prof. V. Ravichandran | 28+ Years Finance Experience | 10+ Years Academic Excellence</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.divider()
 
@@ -359,9 +447,8 @@ render_header()
 
 # Sidebar configuration
 with st.sidebar:
-    st.header("⚙️ Configuration")
-    
-    st.write("### 📊 Funding Rounds")
+    st.markdown("### ⚙️ Configuration")
+    st.markdown("---")
     col_rounds1, col_rounds2 = st.columns([2, 1])
     
     with col_rounds1:
@@ -808,9 +895,9 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
 # Footer
 st.divider()
 st.markdown(f"""
-<div style='text-align: center; color: #999; font-size: 12px;'>
-    <p>🏔️ Cap Table Simulator Pro | The Mountain Path - World of Finance</p>
-    <p>Prof. V. Ravichandran | 28+ Years Corporate Finance & Banking</p>
-    <p>Created: {datetime.now().strftime('%B %d, %Y')}</p>
+<div class='footer'>
+    <p><strong>{BRAND_NAME}</strong></p>
+    <p>Prof. V. Ravichandran | 28+ Years Finance Experience | 10+ Years Academic Excellence</p>
+    <p style='font-size: 12px; color: #999;'>Created: {datetime.now().strftime('%B %d, %Y')}</p>
 </div>
 """, unsafe_allow_html=True)
