@@ -407,12 +407,6 @@ with st.sidebar:
     
     st.divider()
     
-    scenario_type = st.radio(
-        "Scenario Type",
-        options=["Dilution", "Pro-Rata Protected"]
-    )
-    
-    st.divider()
     st.write("**📊 About This Tool**")
     st.write("""
     - Compare equity dilution
