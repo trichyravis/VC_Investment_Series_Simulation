@@ -34,7 +34,6 @@ st.set_page_config(
 # CONSTANTS
 # ============================================================================
 
-FOUNDER_INITIAL_SHARES = 10_000_000
 COLOR_SCHEME = {
     "dark_blue": "#003366",
     "light_blue": "#004d80",
@@ -398,12 +397,16 @@ with st.sidebar:
     st.divider()
     
     founder_capital = st.number_input(
-        "Founder's Initial Capital ($M)",
-        min_value=0.1,
+        "Founder's Initial Capital (Million Shares)",
+        min_value=1.0,
         max_value=100.0,
         value=10.0,
-        step=0.5
+        step=0.5,
+        help="Number of founder shares in millions (e.g., 10.0M = 10,000,000 shares)"
     )
+    
+    # Convert to actual shares
+    founder_shares = int(founder_capital * 1_000_000)
     
     st.divider()
     
@@ -507,7 +510,7 @@ with col_input:
 with col_summary:
     st.write("### 📈 Quick Summary")
     st.metric("Rounds", num_rounds)
-    st.metric("Founder Shares", f"{FOUNDER_INITIAL_SHARES:,}")
+    st.metric("Founder Shares", f"{founder_shares:,}")
     total_investment = funding_df['Investment ($M)'].sum()
     st.metric("Total Investment", f"${total_investment:.2f}M")
 
@@ -518,8 +521,8 @@ with col_summary:
 if calculate_btn:
     try:
         with st.spinner("🔄 Calculating cap tables..."):
-            dilution_table = calculate_cap_table_dilution(funding_df, num_rounds, FOUNDER_INITIAL_SHARES)
-            prorata_table = calculate_cap_table_prorata(funding_df, num_rounds, FOUNDER_INITIAL_SHARES)
+            dilution_table = calculate_cap_table_dilution(funding_df, num_rounds, founder_shares)
+            prorata_table = calculate_cap_table_prorata(funding_df, num_rounds, founder_shares)
             
             st.session_state.dilution_table = dilution_table
             st.session_state.prorata_table = prorata_table
