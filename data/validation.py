@@ -1,0 +1,3 @@
+"""Validation"""
+class InputValidator:
+    pass
