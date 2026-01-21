@@ -315,13 +315,38 @@ render_header()
 with st.sidebar:
     st.header("⚙️ Configuration")
     
-    num_rounds = st.slider(
-        "Number of Rounds",
-        min_value=1,
-        max_value=7,
-        value=5,
-        step=1
-    )
+    st.write("### 📊 Funding Rounds")
+    col_rounds1, col_rounds2 = st.columns([2, 1])
+    
+    with col_rounds1:
+        num_rounds = st.slider(
+            "Number of Rounds",
+            min_value=1,
+            max_value=10,
+            value=3,
+            step=1,
+            help="Total funding rounds including formation"
+        )
+    
+    with col_rounds2:
+        st.metric("Total Rounds", num_rounds)
+    
+    # Show stage info
+    st.divider()
+    if num_rounds == 1:
+        st.info("🏛️ **Formation Only** - No external funding")
+    elif num_rounds == 2:
+        st.info("🌱 **Early Stage** - Seed round")
+    elif num_rounds == 3:
+        st.info("📈 **Early Growth** - Seed + Series A")
+    elif num_rounds == 4:
+        st.info("💼 **Growth Stage** - Through Series B")
+    elif num_rounds == 5:
+        st.info("📊 **Expansion** - Through Series C")
+    elif num_rounds <= 7:
+        st.info("🚀 **Mature Company** - Series D+")
+    else:
+        st.info("🌟 **Late Stage** - Multiple institutional rounds")
     
     st.divider()
     
@@ -357,6 +382,13 @@ col_input, col_summary = st.columns([2, 1])
 with col_input:
     st.write("### 💰 Enter Funding Details for Each Round")
     
+    # Show helper text with round count
+    st.markdown(f"""
+    <div style='background-color: #f0f2f6; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+    <p style='margin: 0; font-size: 14px;'>📌 <strong>Entering {num_rounds} rounds</strong> - Formation + {num_rounds-1} funding rounds</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     funding_data_rows = []
     
     # Header
@@ -370,19 +402,24 @@ with col_input:
     
     st.divider()
     
+    # Get round names
+    round_names = ["Formation", "Seed", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Series H"]
+    
     # Input rows
     for i in range(num_rounds):
         col_round, col_pre, col_investment = st.columns([1, 1.5, 1.5], gap="small")
         
+        round_label = round_names[i] if i < len(round_names) else f"Round {i+1}"
+        
         with col_round:
-            st.write(f"Round {i+1}")
+            st.write(f"<div style='padding: 10px; background: linear-gradient(135deg, #003366 0%, #004d80 100%); color: white; border-radius: 5px; text-align: center;'><strong>{round_label}</strong></div>", unsafe_allow_html=True)
         
         with col_pre:
             pre_money = st.number_input(
-                f"Pre-money round {i+1}",
-                min_value=0.5,
-                max_value=10000.0,
-                value=float(8 * (2 ** i)),
+                f"Pre-money {round_label}",
+                min_value=0.0 if i == 0 else 0.5,
+                max_value=100000.0,
+                value=0.0 if i == 0 else float(8 * (2 ** (i-1))),
                 step=1.0,
                 label_visibility="collapsed",
                 key=f"pre_{i}"
@@ -390,10 +427,10 @@ with col_input:
         
         with col_investment:
             investment = st.number_input(
-                f"Investment round {i+1}",
-                min_value=0.1,
+                f"Investment {round_label}",
+                min_value=0.0 if i == 0 else 0.1,
                 max_value=1000.0,
-                value=float(1.5 * (2 ** (i-0.5))) if i > 0 else 1.41,
+                value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
                 step=0.1,
                 label_visibility="collapsed",
                 key=f"invest_{i}"
@@ -452,7 +489,7 @@ if calculate_btn:
         st.error(f"❌ Error: {str(e)}")
 
 # Display results
-if hasattr(st.session_state, 'dilution_table'):
+if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_table is not None and len(st.session_state.dilution_table) > 0:
     dilution_table = st.session_state.dilution_table
     prorata_table = st.session_state.prorata_table
     
@@ -466,8 +503,12 @@ if hasattr(st.session_state, 'dilution_table'):
         st.subheader("📊 Cap Table with Dilution Scenario")
         st.markdown("*Founder and investors are diluted with each new round*")
         
-        final_dilution_row = dilution_table.iloc[-1]
-        final_dilution_founder = final_dilution_row['Founder %']
+        try:
+            final_dilution_row = dilution_table.iloc[-1]
+            final_dilution_founder = final_dilution_row['Founder %']
+        except Exception as e:
+            st.error(f"Error reading dilution table: {str(e)}")
+            st.stop()
         
         st.markdown("### Ownership Breakdown (Final Round)")
         cols = st.columns(4)
@@ -530,8 +571,12 @@ if hasattr(st.session_state, 'dilution_table'):
         st.subheader("🔄 Cap Table with Pro-Rata Protection")
         st.markdown("*Investors exercise pro-rata rights to maintain ownership percentage*")
         
-        final_prorata_row = prorata_table.iloc[-1]
-        final_prorata_founder = final_prorata_row['Founder %']
+        try:
+            final_prorata_row = prorata_table.iloc[-1]
+            final_prorata_founder = final_prorata_row['Founder %']
+        except Exception as e:
+            st.error(f"Error reading pro-rata table: {str(e)}")
+            st.stop()
         
         st.markdown("### Ownership Breakdown (Final Round)")
         cols = st.columns(4)
