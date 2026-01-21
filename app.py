@@ -16,6 +16,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import plotly.graph_objects as go
+import plotly.express as px
 
 # ============================================================================
 # CONFIGURATION
@@ -118,7 +120,8 @@ def calculate_cap_table_dilution(funding_data, num_rounds, founder_shares):
         pre_money = row.get('Pre-Money ($M)', 0)
         investment = row.get('Investment ($M)', 0)
         
-        if pre_money <= 0 or investment <= 0:
+        # Skip if both are 0 (but allow idx=0 for Formation which should be 0)
+        if idx > 0 and (pre_money <= 0 or investment <= 0):
             continue
         
         post_money = calculate_post_money(pre_money, investment)
@@ -210,7 +213,8 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         pre_money = row.get('Pre-Money ($M)', 0)
         investment = row.get('Investment ($M)', 0)
         
-        if pre_money <= 0 or investment <= 0:
+        # Skip if both are 0 (but allow idx=0 for Formation which should be 0)
+        if idx > 0 and (pre_money <= 0 or investment <= 0):
             continue
         
         post_money = calculate_post_money(pre_money, investment)
