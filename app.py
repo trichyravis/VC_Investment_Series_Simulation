@@ -563,15 +563,18 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         st.markdown("### Pie Chart Distribution")
-        ownership_data = {'Founder': final_dilution_founder, 'Seed': seed_pct, 'Series A': seriesA_pct, 'Series B': seriesB_pct, 'Series C': seriesC_pct, 'Series D': seriesD_pct, 'Series E': seriesE_pct}
-        ownership_data = {k: v for k, v in ownership_data.items() if v > 0}
-        
-        if len(ownership_data) > 0:
-            fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
-            fig_pie.update_layout(height=400, showlegend=True)
-            st.plotly_chart(fig_pie, use_container_width=True)
-        else:
-            st.warning("No ownership data to display")
+        try:
+            ownership_data = {'Founder': final_dilution_founder, 'Seed': seed_pct, 'Series A': seriesA_pct, 'Series B': seriesB_pct, 'Series C': seriesC_pct, 'Series D': seriesD_pct, 'Series E': seriesE_pct}
+            ownership_data = {k: v for k, v in ownership_data.items() if v > 0}
+            
+            if len(ownership_data) > 0:
+                fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+                fig_pie.update_layout(height=400, showlegend=True)
+                st.plotly_chart(fig_pie, use_container_width=True)
+            else:
+                st.warning("No ownership data to display")
+        except Exception as e:
+            st.error(f"Error creating pie chart: {str(e)}")
         
         st.markdown("### Detailed Cap Table")
         st.dataframe(dilution_table, use_container_width=True, hide_index=True)
@@ -640,15 +643,18 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         st.markdown("### Pie Chart Distribution")
-        ownership_data_prorata = {'Founder': final_prorata_founder, 'Seed': seed_pct_prorata, 'Series A': seriesA_pct_prorata, 'Series B': seriesB_pct_prorata, 'Series C': seriesC_pct_prorata, 'Series D': seriesD_pct_prorata, 'Series E': seriesE_pct_prorata}
-        ownership_data_prorata = {k: v for k, v in ownership_data_prorata.items() if v > 0}
-        
-        if len(ownership_data_prorata) > 0:
-            fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
-            fig_pie_prorata.update_layout(height=400, showlegend=True)
-            st.plotly_chart(fig_pie_prorata, use_container_width=True)
-        else:
-            st.warning("No ownership data to display")
+        try:
+            ownership_data_prorata = {'Founder': final_prorata_founder, 'Seed': seed_pct_prorata, 'Series A': seriesA_pct_prorata, 'Series B': seriesB_pct_prorata, 'Series C': seriesC_pct_prorata, 'Series D': seriesD_pct_prorata, 'Series E': seriesE_pct_prorata}
+            ownership_data_prorata = {k: v for k, v in ownership_data_prorata.items() if v > 0}
+            
+            if len(ownership_data_prorata) > 0:
+                fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+                fig_pie_prorata.update_layout(height=400, showlegend=True)
+                st.plotly_chart(fig_pie_prorata, use_container_width=True)
+            else:
+                st.warning("No ownership data to display")
+        except Exception as e:
+            st.error(f"Error creating pie chart: {str(e)}")
         
         st.markdown("### Detailed Cap Table")
         st.dataframe(prorata_table, use_container_width=True, hide_index=True)
