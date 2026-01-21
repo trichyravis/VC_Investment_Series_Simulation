@@ -235,32 +235,51 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         price_per_share = calculate_price_per_share(pre_money, prev_total_shares)
         new_shares = calculate_new_shares(investment, price_per_share)
         
-        # Pro-rata: existing investors exercise rights to maintain ownership %
-        prorata_allocated = 0
+        # Pro-rata Protection Model:
+        # - New investor gets their shares normally
+        # - BUT existing investors ALSO get pro-rata bonus in later rounds
+        #
+        # In Seed round: New investor (Seed) gets their shares
+        # In Series A: Founder (80%) + Seed (20%) get pro-rata to maintain that %
+        #             This means they collectively get a % of Series A's shares as bonus
         
-        # Founder gets pro-rata shares to maintain ownership %
-        if investor_shares['Founder'] > 0:
-            # Founder's current % 
-            founder_current_pct = investor_shares['Founder'] / prev_total_shares
-            # Founder gets their % of the new shares
-            founder_prorata = founder_current_pct * new_shares
-            investor_shares['Founder'] += founder_prorata
-            prorata_allocated += founder_prorata
-        
-        # Previous investors get pro-rata rights
         investor_idx = idx - 1  # Convert to 0-based index
-        for investor in investor_names[:investor_idx]:
-            if investor in investor_shares and investor_shares[investor] > 0:
-                # Investor's current %
-                investor_current_pct = investor_shares[investor] / prev_total_shares
-                # They get their % of the new shares
-                prorata_new = investor_current_pct * new_shares
-                investor_shares[investor] += prorata_new
-                prorata_allocated += prorata_new
-        
-        # New investor gets remaining shares
         current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
-        investor_shares[current_investor] = new_shares - prorata_allocated
+        
+        # Step 1: Calculate bonus shares for existing investors (pro-rata protection)
+        prorata_bonus = 0
+        if idx > 1:  # Only applies to rounds after Seed
+            # Existing investors (founder + previous) get pro-rata
+            # They get: their_total_% * new_shares as BONUS
+            existing_total_pct = 0
+            
+            # Add founder %
+            if investor_shares['Founder'] > 0:
+                existing_total_pct += investor_shares['Founder'] / prev_total_shares
+            
+            # Add all previous investors' %
+            for investor in investor_names[:investor_idx]:
+                if investor in investor_shares and investor_shares[investor] > 0:
+                    existing_total_pct += investor_shares[investor] / prev_total_shares
+            
+            # Bonus shares for existing investors
+            prorata_bonus = existing_total_pct * new_shares * 0.5  # 50% of new shares go to pro-rata
+            
+            # Distribute bonus to existing investors proportionally
+            if prorata_bonus > 0:
+                # Founder gets their share of the bonus
+                if investor_shares['Founder'] > 0:
+                    founder_pct_of_existing = investor_shares['Founder'] / (investor_shares['Founder'] + sum(investor_shares.get(inv, 0) for inv in investor_names[:investor_idx]))
+                    investor_shares['Founder'] += founder_pct_of_existing * prorata_bonus
+                
+                # Previous investors get their share of the bonus
+                for investor in investor_names[:investor_idx]:
+                    if investor in investor_shares and investor_shares[investor] > 0:
+                        investor_pct_of_existing = investor_shares[investor] / (investor_shares['Founder'] + sum(investor_shares.get(inv, 0) for inv in investor_names[:investor_idx]))
+                        investor_shares[investor] += investor_pct_of_existing * prorata_bonus
+        
+        # Step 2: New investor gets remaining shares
+        investor_shares[current_investor] = new_shares - prorata_bonus
         
         total_shares = sum(investor_shares.values())
         
