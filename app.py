@@ -463,73 +463,227 @@ if hasattr(st.session_state, 'dilution_table'):
     tab1, tab2, tab3, tab4 = st.tabs(["📊 With Dilution", "🔄 Pro-Rata Protected", "⚖️ Comparison", "📈 Insights"])
     
     with tab1:
-        st.subheader("Dilution Scenario - No Follow-On Investment")
-        st.dataframe(dilution_table, use_container_width=True, hide_index=True)
+        st.subheader("📊 Cap Table with Dilution Scenario")
+        st.markdown("*Founder and investors are diluted with each new round*")
         
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            founder_final = dilution_table.iloc[-1]['Founder %']
-            st.metric("Final Founder %", f"{founder_final:.2f}%")
-        with col2:
-            seed_final = dilution_table.iloc[-1]['Seed %']
-            st.metric("Final Seed %", f"{seed_final:.2f}%")
-        with col3:
-            total_capital = dilution_table['Investment ($M)'].sum()
-            st.metric("Total Capital", f"${total_capital:.2f}M")
-        with col4:
-            final_valuation = dilution_table.iloc[-1]['Post-Money ($M)']
-            st.metric("Final Post-Money", f"${final_valuation:.2f}M")
+        final_dilution_row = dilution_table.iloc[-1]
+        final_dilution_founder = final_dilution_row['Founder %']
+        
+        st.markdown("### Ownership Breakdown (Final Round)")
+        cols = st.columns(4)
+        
+        with cols[0]:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>🏔️ Founder</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{final_dilution_founder:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_dilution_row.get("Founder Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[1]:
+            seed_pct = final_dilution_row.get("Seed %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>🌱 Seed</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seed_pct:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_dilution_row.get("Seed Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[2]:
+            seriesA_pct = final_dilution_row.get("Series A %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>📈 Series A</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesA_pct:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_dilution_row.get("Series A Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[3]:
+            seriesB_pct = final_dilution_row.get("Series B %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>📊 Series B+</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct + final_dilution_row.get("Series C %", 0) + final_dilution_row.get("Series D %", 0) + final_dilution_row.get("Series E %", 0):.2f}%</h2>
+                <p style='color: white; margin: 0;'>Combined investors</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("### Pie Chart Distribution")
+        ownership_data = {'Founder': final_dilution_founder, 'Seed': seed_pct, 'Series A': seriesA_pct, 'Series B': seriesB_pct, 'Series C': final_dilution_row.get("Series C %", 0), 'Series D': final_dilution_row.get("Series D %", 0), 'Series E': final_dilution_row.get("Series E %", 0)}
+        ownership_data = {k: v for k, v in ownership_data.items() if v > 0}
+        
+        fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+        fig_pie.update_layout(height=400, showlegend=True)
+        st.plotly_chart(fig_pie, use_container_width=True)
+        
+        st.markdown("### Detailed Cap Table")
+        st.dataframe(dilution_table, use_container_width=True, hide_index=True)
     
     with tab2:
-        st.subheader("Pro-Rata Protected Scenario - Investors Follow-On")
-        st.dataframe(prorata_table, use_container_width=True, hide_index=True)
+        st.subheader("🔄 Cap Table with Pro-Rata Protection")
+        st.markdown("*Investors exercise pro-rata rights to maintain ownership percentage*")
         
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            founder_final = prorata_table.iloc[-1]['Founder %']
-            st.metric("Final Founder %", f"{founder_final:.2f}%")
-        with col2:
-            seed_final = prorata_table.iloc[-1]['Seed %']
-            st.metric("Final Seed %", f"{seed_final:.2f}%")
-        with col3:
-            total_capital = prorata_table['Investment ($M)'].sum()
-            st.metric("Total Capital", f"${total_capital:.2f}M")
-        with col4:
-            final_valuation = prorata_table.iloc[-1]['Post-Money ($M)']
-            st.metric("Final Post-Money", f"${final_valuation:.2f}M")
+        final_prorata_row = prorata_table.iloc[-1]
+        final_prorata_founder = final_prorata_row['Founder %']
+        
+        st.markdown("### Ownership Breakdown (Final Round)")
+        cols = st.columns(4)
+        
+        with cols[0]:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>🏔️ Founder</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{final_prorata_founder:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_prorata_row.get("Founder Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[1]:
+            seed_pct_prorata = final_prorata_row.get("Seed %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>🌱 Seed</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seed_pct_prorata:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_prorata_row.get("Seed Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[2]:
+            seriesA_pct_prorata = final_prorata_row.get("Series A %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>📈 Series A</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesA_pct_prorata:.2f}%</h2>
+                <p style='color: white; margin: 0;'>{int(final_prorata_row.get("Series A Shares", 0)):,} shares</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[3]:
+            seriesB_pct_prorata = final_prorata_row.get("Series B %", 0)
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <h3 style='color: white; margin: 0;'>📊 Series B+</h3>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct_prorata + final_prorata_row.get("Series C %", 0) + final_prorata_row.get("Series D %", 0) + final_prorata_row.get("Series E %", 0):.2f}%</h2>
+                <p style='color: white; margin: 0;'>Combined investors</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("### Pie Chart Distribution")
+        ownership_data_prorata = {'Founder': final_prorata_founder, 'Seed': seed_pct_prorata, 'Series A': seriesA_pct_prorata, 'Series B': seriesB_pct_prorata, 'Series C': final_prorata_row.get("Series C %", 0), 'Series D': final_prorata_row.get("Series D %", 0), 'Series E': final_prorata_row.get("Series E %", 0)}
+        ownership_data_prorata = {k: v for k, v in ownership_data_prorata.items() if v > 0}
+        
+        fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+        fig_pie_prorata.update_layout(height=400, showlegend=True)
+        st.plotly_chart(fig_pie_prorata, use_container_width=True)
+        
+        st.markdown("### Detailed Cap Table")
+        st.dataframe(prorata_table, use_container_width=True, hide_index=True)
     
     with tab3:
-        st.subheader("Side-by-Side Comparison")
+        st.subheader("⚖️ Side-by-Side Comparison")
+        st.markdown("*Compare dilution vs pro-rata scenarios*")
         
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
-            dilution_founder = dilution_table.iloc[-1]['Founder %']
-            st.metric("With Dilution", f"{dilution_founder:.2f}%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 30px; border-radius: 15px; text-align: center;'>
+                <h2 style='color: #FFD700; margin: 0;'>With Dilution</h2>
+                <h1 style='color: white; margin: 20px 0;'>{final_dilution_founder:.2f}%</h1>
+                <p style='color: white; margin: 0;'>Founder Ownership</p>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col2:
-            prorata_founder = prorata_table.iloc[-1]['Founder %']
-            st.metric("Pro-Rata Protected", f"{prorata_founder:.2f}%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 30px; border-radius: 15px; text-align: center;'>
+                <h2 style='color: #003366; margin: 0;'>Pro-Rata Protected</h2>
+                <h1 style='color: #FFD700; margin: 20px 0;'>{final_prorata_founder:.2f}%</h1>
+                <p style='color: white; margin: 0;'>Founder Ownership</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        benefit = prorata_founder - dilution_founder
-        st.metric("Pro-Rata Benefit", f"{benefit:.2f}%")
+        prorata_benefit = final_prorata_founder - final_dilution_founder
+        benefit_color = '#28a745' if prorata_benefit > 0 else '#6c757d'
+        with col3:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, {benefit_color} 0%, {benefit_color} 100%); 
+                        padding: 30px; border-radius: 15px; text-align: center;'>
+                <h2 style='color: white; margin: 0;'>Pro-Rata Benefit</h2>
+                <h1 style='color: #FFD700; margin: 20px 0;'>+{prorata_benefit:.2f}%</h1>
+                <p style='color: white; margin: 0;'>Additional Ownership</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("### Ownership Comparison Table")
+        comparison_df = pd.DataFrame({
+            'Investor': ['Founder', 'Seed', 'Series A', 'Series B', 'Series C', 'Series D', 'Series E'],
+            'Dilution %': [final_dilution_row.get(col, 0) for col in ['Founder %', 'Seed %', 'Series A %', 'Series B %', 'Series C %', 'Series D %', 'Series E %']],
+            'Pro-Rata %': [final_prorata_row.get(col, 0) for col in ['Founder %', 'Seed %', 'Series A %', 'Series B %', 'Series C %', 'Series D %', 'Series E %']]
+        })
+        comparison_df = comparison_df[comparison_df['Dilution %'] > 0]
+        comparison_df['Difference %'] = comparison_df['Pro-Rata %'] - comparison_df['Dilution %']
+        st.dataframe(comparison_df.style.format({'Dilution %': '{:.2f}%', 'Pro-Rata %': '{:.2f}%', 'Difference %': '{:.2f}%'}).background_gradient(subset=['Difference %'], cmap='RdYlGn', vmin=-5, vmax=5), use_container_width=True)
     
     with tab4:
-        st.subheader("📈 Key Insights")
+        st.subheader("📈 Key Insights & Analysis")
         
-        col1, col2 = st.columns(2)
+        insight_col1, insight_col2, insight_col3, insight_col4 = st.columns(4)
         
-        with col1:
-            st.write("**Dilution Impact**")
-            founder_dilution = 100 - dilution_table.iloc[-1]['Founder %']
-            st.write(f"- Founder dilution: **{founder_dilution:.2f}%**")
-            st.write(f"- Final ownership: **{dilution_table.iloc[-1]['Founder %']:.2f}%**")
+        with insight_col1:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 14px;'>Final Valuation</p>
+                <h3 style='color: white; margin: 10px 0;'>${final_dilution_row.get("Post-Money ($M)", 0):.1f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
-        with col2:
-            st.write("**Pro-Rata Benefits**")
-            benefit = dilution_table.iloc[-1]['Founder %'] - prorata_table.iloc[-1]['Founder %']
-            st.write(f"- Pro-rata benefit: **{benefit:.2f}%**")
-            st.write(f"- Better ownership protection with rights**")
+        with insight_col2:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 14px;'>Total Shares</p>
+                <h3 style='color: white; margin: 10px 0;'>{int(final_dilution_row.get("Total Shares", 0)):,}</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with insight_col3:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #003366; margin: 0; font-size: 14px;'>Total Dilution</p>
+                <h3 style='color: #FFD700; margin: 10px 0;'>{100 - final_dilution_founder:.2f}%</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with insight_col4:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 14px;'>Pro-Rata Benefit</p>
+                <h3 style='color: #FFD700; margin: 10px 0;'>+{prorata_benefit:.2f}%</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("### Key Findings")
+        if prorata_benefit > 0:
+            st.markdown(f"✅ **Pro-Rata Rights Value**: With pro-rata rights, founder maintains **{prorata_benefit:.2f}%** more ownership.")
+        st.markdown(f"📊 **Final Valuation**: Company valued at **${final_dilution_row.get('Post-Money ($M)', 0):.1f}M** after all rounds.")
+        st.markdown(f"👥 **Founder vs Investors**: Founder has **{final_dilution_founder:.2f}%**, others have **{100-final_dilution_founder:.2f}%**.")
 
 # Footer
 st.divider()
