@@ -120,27 +120,30 @@ def calculate_cap_table_dilution(funding_data, num_rounds, founder_shares):
         pre_money = row.get('Pre-Money ($M)', 0)
         investment = row.get('Investment ($M)', 0)
         
-        # Skip if both are 0 (but allow idx=0 for Formation which should be 0)
-        if idx > 0 and (pre_money <= 0 or investment <= 0):
+        # For Formation (idx=0), don't process in loop - already added above
+        if idx == 0:
+            continue
+        
+        # Skip other rounds if both pre_money and investment are 0
+        if pre_money <= 0 or investment <= 0:
             continue
         
         post_money = calculate_post_money(pre_money, investment)
         price_per_share = calculate_price_per_share(pre_money, prev_total_shares)
         new_shares = calculate_new_shares(investment, price_per_share)
         
-        # Dilution: only new investor gets shares
-        current_investor = investor_names[idx] if idx < len(investor_names) else f'Series {idx+1}'
+        # Investor assignment: idx=1 → Seed, idx=2 → Series A, etc.
+        investor_idx = idx - 1  # Convert to 0-based index for investor_names
+        current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
         investor_shares[current_investor] = new_shares
         
         total_shares = sum(investor_shares.values())
         
         # Build row
-        if idx == 0:
-            round_name = 'Formation'
-        elif idx == 1:
+        if idx == 1:
             round_name = 'Seed'
         else:
-            round_name = f'Series {chr(64 + idx)}'  # Series A, B, C...
+            round_name = f'Series {chr(64 + idx - 1)}'  # Series A, B, C...
         
         row_data = {
             'Round': round_name,
@@ -220,8 +223,12 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         pre_money = row.get('Pre-Money ($M)', 0)
         investment = row.get('Investment ($M)', 0)
         
-        # Skip if both are 0 (but allow idx=0 for Formation which should be 0)
-        if idx > 0 and (pre_money <= 0 or investment <= 0):
+        # For Formation (idx=0), don't process in loop - already added above
+        if idx == 0:
+            continue
+        
+        # Skip other rounds if both pre_money and investment are 0
+        if pre_money <= 0 or investment <= 0:
             continue
         
         post_money = calculate_post_money(pre_money, investment)
@@ -238,8 +245,9 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
             investor_shares['Founder'] += founder_prorata
             prorata_allocated += founder_prorata
         
-        # Previous investors get pro-rata rights
-        for investor in investor_names[:idx]:
+        # Previous investors get pro-rata rights (all investors before this round)
+        investor_idx = idx - 1  # Convert to 0-based index
+        for investor in investor_names[:investor_idx]:
             if investor in investor_shares and investor_shares[investor] > 0:
                 investor_pct = investor_shares[investor] / prev_total_shares
                 prorata_new = investor_pct * new_shares
@@ -247,18 +255,16 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
                 prorata_allocated += prorata_new
         
         # New investor gets remainder
-        current_investor = investor_names[idx] if idx < len(investor_names) else f'Series {idx+1}'
+        current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
         investor_shares[current_investor] = new_shares - prorata_allocated
         
         total_shares = sum(investor_shares.values())
         
         # Build row
-        if idx == 0:
-            round_name = 'Formation'
-        elif idx == 1:
+        if idx == 1:
             round_name = 'Seed'
         else:
-            round_name = f'Series {chr(64 + idx)}'  # Series A, B, C...
+            round_name = f'Series {chr(64 + idx - 1)}'  # Series A, B, C...
         
         row_data = {
             'Round': round_name,
