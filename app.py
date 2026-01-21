@@ -511,6 +511,15 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             st.stop()
         
         st.markdown("### Ownership Breakdown (Final Round)")
+        
+        # Extract all percentages first (before column blocks)
+        seed_pct = final_dilution_row.get("Seed %", 0)
+        seriesA_pct = final_dilution_row.get("Series A %", 0)
+        seriesB_pct = final_dilution_row.get("Series B %", 0)
+        seriesC_pct = final_dilution_row.get("Series C %", 0)
+        seriesD_pct = final_dilution_row.get("Series D %", 0)
+        seriesE_pct = final_dilution_row.get("Series E %", 0)
+        
         cols = st.columns(4)
         
         with cols[0]:
@@ -524,7 +533,6 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[1]:
-            seed_pct = final_dilution_row.get("Seed %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
@@ -535,7 +543,6 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[2]:
-            seriesA_pct = final_dilution_row.get("Series A %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
@@ -546,23 +553,25 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[3]:
-            seriesB_pct = final_dilution_row.get("Series B %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
                 <h3 style='color: white; margin: 0;'>📊 Series B+</h3>
-                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct + final_dilution_row.get("Series C %", 0) + final_dilution_row.get("Series D %", 0) + final_dilution_row.get("Series E %", 0):.2f}%</h2>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct + seriesC_pct + seriesD_pct + seriesE_pct:.2f}%</h2>
                 <p style='color: white; margin: 0;'>Combined investors</p>
             </div>
             """, unsafe_allow_html=True)
         
         st.markdown("### Pie Chart Distribution")
-        ownership_data = {'Founder': final_dilution_founder, 'Seed': seed_pct, 'Series A': seriesA_pct, 'Series B': seriesB_pct, 'Series C': final_dilution_row.get("Series C %", 0), 'Series D': final_dilution_row.get("Series D %", 0), 'Series E': final_dilution_row.get("Series E %", 0)}
+        ownership_data = {'Founder': final_dilution_founder, 'Seed': seed_pct, 'Series A': seriesA_pct, 'Series B': seriesB_pct, 'Series C': seriesC_pct, 'Series D': seriesD_pct, 'Series E': seriesE_pct}
         ownership_data = {k: v for k, v in ownership_data.items() if v > 0}
         
-        fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
-        fig_pie.update_layout(height=400, showlegend=True)
-        st.plotly_chart(fig_pie, use_container_width=True)
+        if len(ownership_data) > 0:
+            fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+            fig_pie.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie, use_container_width=True)
+        else:
+            st.warning("No ownership data to display")
         
         st.markdown("### Detailed Cap Table")
         st.dataframe(dilution_table, use_container_width=True, hide_index=True)
@@ -579,6 +588,15 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             st.stop()
         
         st.markdown("### Ownership Breakdown (Final Round)")
+        
+        # Extract all percentages first (before column blocks)
+        seed_pct_prorata = final_prorata_row.get("Seed %", 0)
+        seriesA_pct_prorata = final_prorata_row.get("Series A %", 0)
+        seriesB_pct_prorata = final_prorata_row.get("Series B %", 0)
+        seriesC_pct_prorata = final_prorata_row.get("Series C %", 0)
+        seriesD_pct_prorata = final_prorata_row.get("Series D %", 0)
+        seriesE_pct_prorata = final_prorata_row.get("Series E %", 0)
+        
         cols = st.columns(4)
         
         with cols[0]:
@@ -592,7 +610,6 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[1]:
-            seed_pct_prorata = final_prorata_row.get("Seed %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
@@ -603,7 +620,6 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[2]:
-            seriesA_pct_prorata = final_prorata_row.get("Series A %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
@@ -614,23 +630,25 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             """, unsafe_allow_html=True)
         
         with cols[3]:
-            seriesB_pct_prorata = final_prorata_row.get("Series B %", 0)
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
                 <h3 style='color: white; margin: 0;'>📊 Series B+</h3>
-                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct_prorata + final_prorata_row.get("Series C %", 0) + final_prorata_row.get("Series D %", 0) + final_prorata_row.get("Series E %", 0):.2f}%</h2>
+                <h2 style='color: #FFD700; margin: 10px 0;'>{seriesB_pct_prorata + seriesC_pct_prorata + seriesD_pct_prorata + seriesE_pct_prorata:.2f}%</h2>
                 <p style='color: white; margin: 0;'>Combined investors</p>
             </div>
             """, unsafe_allow_html=True)
         
         st.markdown("### Pie Chart Distribution")
-        ownership_data_prorata = {'Founder': final_prorata_founder, 'Seed': seed_pct_prorata, 'Series A': seriesA_pct_prorata, 'Series B': seriesB_pct_prorata, 'Series C': final_prorata_row.get("Series C %", 0), 'Series D': final_prorata_row.get("Series D %", 0), 'Series E': final_prorata_row.get("Series E %", 0)}
+        ownership_data_prorata = {'Founder': final_prorata_founder, 'Seed': seed_pct_prorata, 'Series A': seriesA_pct_prorata, 'Series B': seriesB_pct_prorata, 'Series C': seriesC_pct_prorata, 'Series D': seriesD_pct_prorata, 'Series E': seriesE_pct_prorata}
         ownership_data_prorata = {k: v for k, v in ownership_data_prorata.items() if v > 0}
         
-        fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
-        fig_pie_prorata.update_layout(height=400, showlegend=True)
-        st.plotly_chart(fig_pie_prorata, use_container_width=True)
+        if len(ownership_data_prorata) > 0:
+            fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
+            fig_pie_prorata.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie_prorata, use_container_width=True)
+        else:
+            st.warning("No ownership data to display")
         
         st.markdown("### Detailed Cap Table")
         st.dataframe(prorata_table, use_container_width=True, hide_index=True)
