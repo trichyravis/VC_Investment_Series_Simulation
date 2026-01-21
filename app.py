@@ -605,7 +605,7 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             if len(ownership_data) > 0:
                 fig_pie = go.Figure(data=[go.Pie(labels=list(ownership_data.keys()), values=list(ownership_data.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
                 fig_pie.update_layout(height=400, showlegend=True)
-                st.plotly_chart(fig_pie, use_container_width=True)
+                st.plotly_chart(fig_pie, use_container_width=True, key="pie_dilution")
             else:
                 st.warning("No ownership data to display")
         except Exception as e:
@@ -685,7 +685,7 @@ if hasattr(st.session_state, 'dilution_table') and st.session_state.dilution_tab
             if len(ownership_data_prorata) > 0:
                 fig_pie_prorata = go.Figure(data=[go.Pie(labels=list(ownership_data_prorata.keys()), values=list(ownership_data_prorata.values()), marker=dict(colors=['#003366', '#1e90ff', '#20b2aa', '#ff8c00', '#9932cc', '#ff1493', '#ffd700']), textposition='inside', textinfo='label+percent')])
                 fig_pie_prorata.update_layout(height=400, showlegend=True)
-                st.plotly_chart(fig_pie_prorata, use_container_width=True)
+                st.plotly_chart(fig_pie_prorata, use_container_width=True, key="pie_prorata")
             else:
                 st.warning("No ownership data to display")
         except Exception as e:
