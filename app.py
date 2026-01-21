@@ -236,27 +236,34 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         new_shares = calculate_new_shares(investment, price_per_share)
         
         # Pro-rata: existing investors (including founder) exercise rights
+        # BUT new investor must get minimum shares based on investment
+        
+        # Calculate minimum shares new investor should get
+        new_investor_minimum = investment / price_per_share if price_per_share > 0 else 0
+        
+        # Available shares for pro-rata after new investor minimum
+        available_for_prorata = new_shares - new_investor_minimum
         prorata_allocated = 0
         
-        # Founder gets pro-rata rights
-        if investor_shares['Founder'] > 0:
+        # Founder gets pro-rata rights (on available shares)
+        if investor_shares['Founder'] > 0 and available_for_prorata > 0:
             founder_pct = investor_shares['Founder'] / prev_total_shares
-            founder_prorata = founder_pct * new_shares
+            founder_prorata = founder_pct * available_for_prorata
             investor_shares['Founder'] += founder_prorata
             prorata_allocated += founder_prorata
         
         # Previous investors get pro-rata rights (all investors before this round)
         investor_idx = idx - 1  # Convert to 0-based index
         for investor in investor_names[:investor_idx]:
-            if investor in investor_shares and investor_shares[investor] > 0:
+            if investor in investor_shares and investor_shares[investor] > 0 and available_for_prorata > 0:
                 investor_pct = investor_shares[investor] / prev_total_shares
-                prorata_new = investor_pct * new_shares
+                prorata_new = investor_pct * available_for_prorata
                 investor_shares[investor] += prorata_new
                 prorata_allocated += prorata_new
         
-        # New investor gets remainder
+        # New investor gets minimum + any remainder from pro-rata
         current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
-        investor_shares[current_investor] = new_shares - prorata_allocated
+        investor_shares[current_investor] = new_investor_minimum + (available_for_prorata - prorata_allocated)
         
         total_shares = sum(investor_shares.values())
         
