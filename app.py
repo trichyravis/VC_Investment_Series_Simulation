@@ -235,39 +235,32 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         price_per_share = calculate_price_per_share(pre_money, prev_total_shares)
         new_shares = calculate_new_shares(investment, price_per_share)
         
-        # Pro-rata: existing investors (including founder) exercise rights
-        # BUT new investor must get minimum shares based on investment
-        
-        # Calculate minimum shares new investor should get
-        # NOTE: new_shares is already calculated as (investment * 1_000_000) / price_per_share
-        # So new_shares IS the minimum the new investor should get
-        new_investor_minimum = new_shares
-        
-        # Available shares for pro-rata after new investor minimum
-        # In pure pro-rata with minimum guarantee, there's no "extra" to distribute
-        # So available_for_prorata = 0 (new investor gets their full allocation)
-        available_for_prorata = 0
+        # Pro-rata: existing investors exercise rights to maintain ownership %
         prorata_allocated = 0
         
-        # Founder gets pro-rata rights (on available shares)
-        if investor_shares['Founder'] > 0 and available_for_prorata > 0:
-            founder_pct = investor_shares['Founder'] / prev_total_shares
-            founder_prorata = founder_pct * available_for_prorata
+        # Founder gets pro-rata shares to maintain ownership %
+        if investor_shares['Founder'] > 0:
+            # Founder's current % 
+            founder_current_pct = investor_shares['Founder'] / prev_total_shares
+            # Founder gets their % of the new shares
+            founder_prorata = founder_current_pct * new_shares
             investor_shares['Founder'] += founder_prorata
             prorata_allocated += founder_prorata
         
-        # Previous investors get pro-rata rights (all investors before this round)
+        # Previous investors get pro-rata rights
         investor_idx = idx - 1  # Convert to 0-based index
         for investor in investor_names[:investor_idx]:
-            if investor in investor_shares and investor_shares[investor] > 0 and available_for_prorata > 0:
-                investor_pct = investor_shares[investor] / prev_total_shares
-                prorata_new = investor_pct * available_for_prorata
+            if investor in investor_shares and investor_shares[investor] > 0:
+                # Investor's current %
+                investor_current_pct = investor_shares[investor] / prev_total_shares
+                # They get their % of the new shares
+                prorata_new = investor_current_pct * new_shares
                 investor_shares[investor] += prorata_new
                 prorata_allocated += prorata_new
         
-        # New investor gets their full allocation (no pro-rata because available_for_prorata = 0)
+        # New investor gets remaining shares
         current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
-        investor_shares[current_investor] = new_investor_minimum
+        investor_shares[current_investor] = new_shares - prorata_allocated
         
         total_shares = sum(investor_shares.values())
         
