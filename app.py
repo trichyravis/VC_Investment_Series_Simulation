@@ -396,17 +396,24 @@ with st.sidebar:
     
     st.divider()
     
-    founder_capital = st.number_input(
-        "Founder's Initial Capital (Million Shares)",
-        min_value=1.0,
-        max_value=100.0,
-        value=10.0,
-        step=0.5,
-        help="Number of founder shares in millions (e.g., 10.0M = 10,000,000 shares)"
-    )
+    st.write("### 👤 Founder's Shares")
+    col_cap1, col_cap2 = st.columns([2, 1])
+    
+    with col_cap1:
+        founder_capital = st.slider(
+            "Initial Shares (Millions)",
+            min_value=1.0,
+            max_value=100.0,
+            value=10.0,
+            step=0.5,
+            help="Founder's initial share allocation in millions"
+        )
     
     # Convert to actual shares
     founder_shares = int(founder_capital * 1_000_000)
+    
+    with col_cap2:
+        st.metric("Shares", f"{founder_shares/1_000_000:.1f}M")
     
     st.divider()
     
