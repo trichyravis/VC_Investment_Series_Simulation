@@ -135,8 +135,15 @@ def calculate_cap_table_dilution(funding_data, num_rounds, founder_shares):
         total_shares = sum(investor_shares.values())
         
         # Build row
+        if idx == 0:
+            round_name = 'Formation'
+        elif idx == 1:
+            round_name = 'Seed'
+        else:
+            round_name = f'Series {chr(64 + idx)}'  # Series A, B, C...
+        
         row_data = {
-            'Round': f'Series {chr(64 + idx)}' if idx > 0 else 'Seed',
+            'Round': round_name,
             'Pre-Money ($M)': round(pre_money, 2),
             'Investment ($M)': round(investment, 2),
             'Post-Money ($M)': round(post_money, 2),
@@ -246,8 +253,15 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         total_shares = sum(investor_shares.values())
         
         # Build row
+        if idx == 0:
+            round_name = 'Formation'
+        elif idx == 1:
+            round_name = 'Seed'
+        else:
+            round_name = f'Series {chr(64 + idx)}'  # Series A, B, C...
+        
         row_data = {
-            'Round': f'Series {chr(64 + idx)}' if idx > 0 else 'Seed',
+            'Round': round_name,
             'Pre-Money ($M)': round(pre_money, 2),
             'Investment ($M)': round(investment, 2),
             'Post-Money ($M)': round(post_money, 2),
