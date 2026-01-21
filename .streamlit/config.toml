@@ -1,1 +1,110 @@
 
+# Streamlit Configuration File
+# Cap Table Simulator Pro - The Mountain Path World of Finance
+# Prof. V. Ravichandran | 28+ Years Corporate Finance & Banking
+
+# ============================================================================
+# THEME CONFIGURATION
+# ============================================================================
+# Mountain Path - World of Finance Color Scheme
+
+[theme]
+# Primary Color - Dark Blue (Mountain Peak)
+primaryColor = "#003366"
+
+# Background Color - Clean White
+backgroundColor = "#ffffff"
+
+# Secondary Background Color - Light Gray
+secondaryBackgroundColor = "#f5f5f5"
+
+# Text Color - Dark Gray
+textColor = "#333333"
+
+# Font Family - Professional Sans Serif
+font = "sans serif"
+
+# ============================================================================
+# CLIENT CONFIGURATION
+# ============================================================================
+
+[client]
+# Show detailed error messages
+showErrorDetails = true
+
+# Show toolbar
+toolbarMode = "developer"
+
+# ============================================================================
+# LOGGER CONFIGURATION
+# ============================================================================
+
+[logger]
+# Log level: debug, info, warning, error, critical
+level = "info"
+
+# ============================================================================
+# SERVER CONFIGURATION
+# ============================================================================
+
+[server]
+# Port to run Streamlit server
+port = 8501
+
+# Run on save
+runOnSave = true
+
+# Maximum upload size (MB)
+maxUploadSize = 200
+
+# ============================================================================
+# BROWSER CONFIGURATION
+# ============================================================================
+
+[browser]
+# Gather usage statistics
+gatherUsageStats = false
+
+# ============================================================================
+# GLOBAL CONFIGURATION
+# ============================================================================
+
+[global]
+# Data Frame serialization format
+dataFrameSerialization = "auto"
+
+# Time zone
+timeZone = "UTC"
+
+# ============================================================================
+# UI CONFIGURATION
+# ============================================================================
+
+[ui]
+# Hide "Manage app" button
+hideTopBar = false
+
+# Hide Streamlit footer
+hideFooterWaterMark = false
+
+# ============================================================================
+# PERFORMANCE
+# ============================================================================
+
+[client]
+# Show loading spinner
+showLoadingSpinner = true
+
+# ============================================================================
+# FOOTER NOTES
+# ============================================================================
+
+# Mountain Path Color Scheme:
+# - Primary (Dark Blue): #003366
+# - Secondary (Light Blue): #004d80
+# - Accent (Gold): #FFD700
+# - Background: #ffffff
+# - Secondary BG: #f5f5f5
+#
+# This configuration is optimized for Cap Table Simulator Pro
+# Adjust settings based on your deployment environment
