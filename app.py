@@ -1,3 +1,4 @@
+
 """
 Cap Table Simulator Pro - Enhanced Streamlit Application
 Professional Startup Equity Analysis Dashboard
@@ -216,8 +217,17 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         price_per_share = calculate_price_per_share(pre_money, prev_total_shares)
         new_shares = calculate_new_shares(investment, price_per_share)
         
-        # Pro-rata: existing investors exercise rights
+        # Pro-rata: existing investors (including founder) exercise rights
         prorata_allocated = 0
+        
+        # Founder gets pro-rata rights
+        if investor_shares['Founder'] > 0:
+            founder_pct = investor_shares['Founder'] / prev_total_shares
+            founder_prorata = founder_pct * new_shares
+            investor_shares['Founder'] += founder_prorata
+            prorata_allocated += founder_prorata
+        
+        # Previous investors get pro-rata rights
         for investor in investor_names[:idx]:
             if investor in investor_shares and investor_shares[investor] > 0:
                 investor_pct = investor_shares[investor] / prev_total_shares
