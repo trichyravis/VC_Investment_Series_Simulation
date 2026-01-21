@@ -239,10 +239,14 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
         # BUT new investor must get minimum shares based on investment
         
         # Calculate minimum shares new investor should get
-        new_investor_minimum = investment / price_per_share if price_per_share > 0 else 0
+        # NOTE: new_shares is already calculated as (investment * 1_000_000) / price_per_share
+        # So new_shares IS the minimum the new investor should get
+        new_investor_minimum = new_shares
         
         # Available shares for pro-rata after new investor minimum
-        available_for_prorata = new_shares - new_investor_minimum
+        # In pure pro-rata with minimum guarantee, there's no "extra" to distribute
+        # So available_for_prorata = 0 (new investor gets their full allocation)
+        available_for_prorata = 0
         prorata_allocated = 0
         
         # Founder gets pro-rata rights (on available shares)
@@ -261,9 +265,9 @@ def calculate_cap_table_prorata(funding_data, num_rounds, founder_shares):
                 investor_shares[investor] += prorata_new
                 prorata_allocated += prorata_new
         
-        # New investor gets minimum + any remainder from pro-rata
+        # New investor gets their full allocation (no pro-rata because available_for_prorata = 0)
         current_investor = investor_names[investor_idx] if investor_idx < len(investor_names) else f'Series {investor_idx+1}'
-        investor_shares[current_investor] = new_investor_minimum + (available_for_prorata - prorata_allocated)
+        investor_shares[current_investor] = new_investor_minimum
         
         total_shares = sum(investor_shares.values())
         
