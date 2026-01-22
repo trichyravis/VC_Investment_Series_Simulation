@@ -124,7 +124,7 @@ st.markdown(f"<div class='hero-title'><h1>CAP TABLE SIMULATOR PRO</h1><p>Profess
 # ============================================================================
 
 with st.sidebar:
-    st.markdown("### 📊 Funding Rounds")
+    st.markdown("### 📊 Configuration")
     col_rounds1, col_rounds2 = st.columns([2, 1])
     
     with col_rounds1:
@@ -162,50 +162,6 @@ with st.sidebar:
     
     st.divider()
     
-    # Funding rounds input
-    funding_data_rows = []
-    
-    for i in range(num_rounds):
-        if i == 0:
-            round_label = "Formation"
-        elif i == 1:
-            round_label = "Seed"
-        else:
-            round_label = f"Series {chr(64 + i - 1)}"
-        
-        st.write(f"**Round {i+1}: {round_label}**")
-        col_pre, col_inv = st.columns(2)
-        
-        with col_pre:
-            pre_money = st.number_input(
-                f"Pre-Money {round_label} ($M)",
-                min_value=0.1,
-                max_value=10000.0,
-                value=float(0.5 * (2 ** i)),
-                step=0.1,
-                label_visibility="collapsed",
-                key=f"pre_{i}"
-            )
-        
-        with col_inv:
-            investment = st.number_input(
-                f"Investment {round_label}",
-                min_value=0.0 if i == 0 else 0.1,
-                max_value=1000.0,
-                value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
-                step=0.1,
-                label_visibility="collapsed",
-                key=f"invest_{i}"
-            )
-        
-        funding_data_rows.append({
-            'Round': i + 1,
-            'Round_Name': round_label,
-            'Pre_Money': pre_money,
-            'Investment': investment
-        })
-    
-    st.divider()
     st.write("**📊 About This Tool**")
     st.write("""
     * Compare equity dilution
@@ -215,6 +171,52 @@ with st.sidebar:
     """)
     
     calculate_button = st.button("🧮 CALCULATE", use_container_width=True)
+
+# Funding rounds input - NOW ON MAIN PAGE
+st.markdown("---")
+st.markdown("### 📊 Funding Rounds Configuration")
+
+funding_data_rows = []
+
+for i in range(num_rounds):
+    if i == 0:
+        round_label = "Formation"
+    elif i == 1:
+        round_label = "Seed"
+    else:
+        round_label = f"Series {chr(64 + i - 1)}"
+    
+    st.write(f"**Round {i+1}: {round_label}**")
+    col_pre, col_inv = st.columns(2)
+    
+    with col_pre:
+        pre_money = st.number_input(
+            f"Pre-Money {round_label} ($M)",
+            min_value=0.1,
+            max_value=10000.0,
+            value=float(0.5 * (2 ** i)),
+            step=0.1,
+            label_visibility="collapsed",
+            key=f"pre_{i}"
+        )
+    
+    with col_inv:
+        investment = st.number_input(
+            f"Investment {round_label}",
+            min_value=0.0 if i == 0 else 0.1,
+            max_value=1000.0,
+            value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
+            step=0.1,
+            label_visibility="collapsed",
+            key=f"invest_{i}"
+        )
+    
+    funding_data_rows.append({
+        'Round': i + 1,
+        'Round_Name': round_label,
+        'Pre_Money': pre_money,
+        'Investment': investment
+    })
 
 # ============================================================================
 # MAIN CALCULATIONS
