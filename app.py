@@ -560,37 +560,11 @@ with tab_funding:
         
         st.markdown("---")
         
-        # Calculate Button and Instructions
+        # Call to Action
         st.markdown("""
         <div style='background: #d4edda; border-left: 4px solid #28a745; padding: 12px; border-radius: 5px;'>
             <p style='margin: 0; color: #155724; font-size: 13px;'>
                 <strong>✅ Ready to analyze:</strong> Click the <strong>CALCULATE</strong> button in the sidebar to view cap tables and dilution analysis.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        
-        with col_metric4:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
-                        padding: 15px; border-radius: 8px; text-align: center;'>
-                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>FINAL VALUATION</p>
-                <h3 style='color: white; margin: 8px 0 0 0;'>${final_valuation:.2f}M</h3>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        
-        # Professional info box with instructions
-        st.markdown("""
-        <div style='background: #e8f4f8; border-left: 4px solid #0066cc; padding: 15px; border-radius: 5px;'>
-            <p style='margin: 0; color: #003366;'>
-                <strong>✅ Next Steps:</strong>
-            </p>
-            <p style='margin: 8px 0 0 0; color: #003366; font-size: 14px;'>
-                1. Review your funding inputs above<br>
-                2. Click <strong>CALCULATE</strong> button in the sidebar<br>
-                3. Navigate to other tabs to see detailed analysis (With Dilution, Pro-Rata Protected, Comparison, Insights)
             </p>
         </div>
         """, unsafe_allow_html=True)
