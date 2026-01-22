@@ -320,7 +320,7 @@ with tab_about:
             The Mountain Path - World of Finance
         </p>
         <p style='color: #e8f0f7; margin: 8px 0 0 0; font-size: 14px;'>
-            Master Startup Equity Dilution & Valuation
+            Explore the Real Mathematics of Startup Equity • Understand Founder Dilution & Investor Rights
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -511,7 +511,7 @@ with tab_funding:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>📊 Funding Rounds Configuration</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            Enter your funding details • Post-Money calculates automatically
+            Define Your Cap Table • Pre-Money + Investment = Post-Money Valuation
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -739,7 +739,7 @@ with tab1:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>📊 With Dilution Scenario</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            Full dilution analysis • Founder and investor ownership decreases each round
+            No Protection • Full Dilution Reality • Every Round Reduces All Ownership Percentages
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -938,7 +938,7 @@ with tab2:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>🛡️ Pro-Rata Protected Scenario</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            Early investors maintain ownership • Protection through pro-rata rights
+            Investor Protection Activated • Pro-Rata Rights Prevent Excessive Dilution • Founder Bears the Weight
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -1131,7 +1131,7 @@ with tab3:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>⚖️ Comparison Analysis</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            With Dilution vs Pro-Rata Protected • See the difference pro-rata rights make
+            Side-by-Side Impact Study • Quantify Pro-Rata Benefits • Understand Founder vs Investor Dynamics
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -1280,7 +1280,7 @@ with tab4:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>📈 Key Insights & Analysis</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            Key metrics • Dilution analysis • Pro-rata benefits
+            Critical Metrics Dashboard • Dilution Progression • Founder vs Investor Interests Revealed
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -1349,7 +1349,7 @@ with tab_edu:
                 box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
         <h2 style='color: white; margin: 0; font-size: 28px;'>📚 Educational Guide</h2>
         <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
-            Learn cap table calculations • Formulas • Worked examples • Practice problems
+            Master Cap Table Mathematics • Learn from Theory to Application • Practice & Build Expertise
         </p>
     </div>
     """, unsafe_allow_html=True)
