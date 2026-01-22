@@ -287,6 +287,42 @@ with st.sidebar:
     
     st.markdown("")
     calculate_button = st.button("🧮 CALCULATE", use_container_width=True)
+    
+    # ========== SIDEBAR FOOTER ==========
+    st.divider()
+    
+    st.markdown("""
+    <div style='padding: 15px 0; text-align: center;'>
+        <p style='margin: 0; font-size: 12px; font-weight: 700; color: #003366;'>
+            🏔️ The Mountain Path
+        </p>
+        <p style='margin: 5px 0; font-size: 11px; color: #555;'>
+            Prof. V. Ravichandran
+        </p>
+        <p style='margin: 0; font-size: 10px; color: #999;'>
+            28+ Yrs Finance | 10+ Yrs Academic
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.divider()
+    
+    st.markdown("""
+    <div style='padding: 10px 0; text-align: center;'>
+        <p style='margin: 0 0 8px 0; font-size: 11px; font-weight: 600; color: #003366;'>
+            📱 Connect
+        </p>
+        <p style='margin: 0; font-size: 10px;'>
+            <a href='https://www.linkedin.com/in/trichyravis' target='_blank' style='
+                color: #0A66C2; text-decoration: none; font-weight: 600;
+            '>🔗 LinkedIn</a>
+            &nbsp; | &nbsp;
+            <a href='https://github.com/trichyravis' target='_blank' style='
+                color: #333; text-decoration: none; font-weight: 600;
+            '>💻 GitHub</a>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Funding rounds input - REMOVE FROM HERE
 # (Will be moved to tab)
@@ -1831,56 +1867,7 @@ Pro-Rata = (Protected % × Total Shares) / 100</pre>
     """)
 
 # ============================================================================
-# FOOTER
+# FOOTER - MOVED TO SIDEBAR
 # ============================================================================
 
-st.divider()
-st.markdown(f"""
-<div style='text-align: center; color: #666; padding: 2rem 0;'>
-    <p style='font-size: 16px; font-weight: bold; color: #003366;'>
-        🏔️ The Mountain Path - World of Finance
-    </p>
-    <p style='margin: 10px 0; color: #003366; font-weight: 600;'>
-        Prof. V. Ravichandran
-    </p>
-    <p style='margin: 5px 0; font-size: 13px; color: #555;'>
-        28+ Years Corporate Finance & Banking | 10+ Years Academic Excellence
-    </p>
-    
-    <hr style='margin: 15px auto; width: 60%; border: 1px solid #e0e0e0;'>
-    
-    <p style='margin: 15px 0; font-size: 13px; font-weight: 600; color: #003366;'>
-        📱 Connect with Me
-    </p>
-    
-    <p style='margin: 10px 0;'>
-        <a href='https://www.linkedin.com/in/trichyravis' target='_blank' style='
-            text-decoration: none; 
-            color: #0A66C2; 
-            font-weight: 600;
-            margin: 0 15px;
-            font-size: 13px;
-        '>
-            🔗 LinkedIn: /in/trichyravis
-        </a>
-        <span style='color: #ccc;'>•</span>
-        <a href='https://github.com/trichyravis' target='_blank' style='
-            text-decoration: none; 
-            color: #333; 
-            font-weight: 600;
-            margin: 0 15px;
-            font-size: 13px;
-        '>
-            💻 GitHub: @trichyravis
-        </a>
-    </p>
-    
-    <p style='font-size: 12px; color: #999; margin-top: 15px;'>
-        Created: {datetime.now().strftime('%B %d, %Y')} | Bangalore, India
-    </p>
-    
-    <p style='font-size: 11px; color: #bbb; margin-top: 8px;'>
-        © 2026 Cap Table Simulator Pro | Educational Tool for Finance Students
-    </p>
-</div>
-""", unsafe_allow_html=True)
+# No footer at bottom - moved to sidebar
