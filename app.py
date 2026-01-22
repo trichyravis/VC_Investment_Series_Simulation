@@ -527,7 +527,25 @@ with tab_funding:
     
     funding_data_rows = []
     
-    # Compact input layout - 2 columns for Pre-Money and Investment
+    # Create a more compact table-like layout
+    st.markdown("#### 💰 Enter Funding Details")
+    
+    # Create input table with better layout
+    input_cols = st.columns([0.8, 2.5, 2, 2, 1.5])
+    
+    # Header row
+    with input_cols[0]:
+        st.markdown("<p style='font-weight: bold; color: #003366; margin-bottom: 20px;'>Round</p>", unsafe_allow_html=True)
+    with input_cols[1]:
+        st.markdown("<p style='font-weight: bold; color: #003366; margin-bottom: 20px;'>Pre-Money ($M)</p>", unsafe_allow_html=True)
+    with input_cols[2]:
+        st.markdown("<p style='font-weight: bold; color: #003366; margin-bottom: 20px;'>Investment ($M)</p>", unsafe_allow_html=True)
+    with input_cols[3]:
+        st.markdown("<p style='font-weight: bold; color: #003366; margin-bottom: 20px;'>Post-Money ($M)</p>", unsafe_allow_html=True)
+    with input_cols[4]:
+        st.markdown("<p style='font-weight: bold; color: #003366; margin-bottom: 20px;'>Change</p>", unsafe_allow_html=True)
+    
+    # Data rows
     for i in range(num_rounds):
         if i == 0:
             round_label = "Formation"
@@ -539,12 +557,14 @@ with tab_funding:
             round_label = f"Series {chr(64 + i - 1)}"
             round_emoji = "📈"
         
-        # Compact header
-        st.markdown(f"<h5 style='margin: 15px 0 10px 0; color: #003366;'>{round_emoji} {round_label}</h5>", unsafe_allow_html=True)
+        row_cols = st.columns([0.8, 2.5, 2, 2, 1.5])
         
-        col1, col2, col3 = st.columns([2.5, 2.5, 1.5])
+        # Round name
+        with row_cols[0]:
+            st.markdown(f"<p style='color: #003366; font-weight: 600; margin: 0;'>{round_emoji}</p>", unsafe_allow_html=True)
         
-        with col1:
+        # Pre-Money input
+        with row_cols[1]:
             pre_money = st.number_input(
                 f"Pre-Money {round_label}",
                 min_value=0.1,
@@ -552,10 +572,12 @@ with tab_funding:
                 value=0.5 if i == 0 else 1.0,
                 step=0.1,
                 label_visibility="collapsed",
-                key=f"pre_{i}"
+                key=f"pre_{i}",
+                format="%.2f"
             )
         
-        with col2:
+        # Investment input
+        with row_cols[2]:
             investment = st.number_input(
                 f"Investment {round_label}",
                 min_value=0.0 if i == 0 else 0.1,
@@ -563,16 +585,29 @@ with tab_funding:
                 value=0.0 if i == 0 else 1.0,
                 step=0.1,
                 label_visibility="collapsed",
-                key=f"invest_{i}"
+                key=f"invest_{i}",
+                format="%.2f"
             )
         
-        with col3:
+        # Post-Money (calculated)
+        with row_cols[3]:
             post_money = pre_money + investment
-            st.metric(
-                label="Post-Money",
-                value=f"${post_money:.2f}M",
-                label_visibility="collapsed"
+            st.markdown(
+                f"<p style='color: #003366; font-weight: 600; margin: 0; padding-top: 8px;'>${post_money:.2f}M</p>",
+                unsafe_allow_html=True
             )
+        
+        # Change percentage
+        with row_cols[4]:
+            if pre_money > 0:
+                change_pct = (investment / pre_money) * 100
+                color = "#00d084" if change_pct > 0 else "#666"
+                st.markdown(
+                    f"<p style='color: {color}; font-weight: 600; margin: 0; padding-top: 8px;'>{change_pct:.1f}%</p>",
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(f"<p style='color: #666; margin: 0; padding-top: 8px;'>-</p>", unsafe_allow_html=True)
         
         funding_data_rows.append({
             'Round': i + 1,
