@@ -810,11 +810,12 @@ with tab4:
             """, unsafe_allow_html=True)
         
         with insight_col2:
+            total_shares_mn = int(final_row.get("Total Shares", 0)) / 1_000_000
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
                 <p style='color: #FFD700; margin: 0; font-size: 14px;'>Total Shares</p>
-                <h3 style='color: white; margin: 10px 0;'>{int(final_row.get("Total Shares", 0)):,}</h3>
+                <h3 style='color: white; margin: 10px 0;'>{total_shares_mn:.2f} Mn</h3>
             </div>
             """, unsafe_allow_html=True)
         
