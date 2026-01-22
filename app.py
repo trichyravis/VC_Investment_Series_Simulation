@@ -637,21 +637,37 @@ with tab2:
         with col_pie1:
             st.markdown("**Ownership Distribution (%) - Pro-Rata Protected**")
             founder_pct = final_row['Founder %']
-            investor_pct = 100.0 - founder_pct
             
-            # Pro-rata scenario: early investors maintain 20%
+            # Create series breakdown from table with pro-rata
             series_data_prorata = {}
             series_data_prorata['Founder'] = founder_pct
-            series_data_prorata['Seed (Protected at 20%)'] = 20.0
-            series_data_prorata['Other Investors'] = max(0, investor_pct - 20.0)
+            
+            # Calculate each series' ownership with pro-rata
+            dilution_table = st.session_state.dilution_table
+            for idx, row in dilution_table.iterrows():
+                if idx > 0:  # Skip formation
+                    if idx == 1:  # First investment round (Seed)
+                        # With pro-rata, seed maintains 20%
+                        series_data_prorata['Seed (Protected)'] = 20.0
+                    else:
+                        # For subsequent rounds, calculate the difference
+                        curr_total = int(row['Total Shares'])
+                        prev_total = int(dilution_table.iloc[idx-1]['Total Shares'])
+                        new_shares = curr_total - prev_total
+                        if curr_total > 0:
+                            series_name_letter = chr(65 + idx - 2)  # A, B, C...
+                            pct = (new_shares / curr_total) * 100
+                            if pct > 0.01:
+                                series_data_prorata[f'Series {series_name_letter}'] = pct
             
             # Filter to show only positive values
             series_data_prorata = {k: v for k, v in series_data_prorata.items() if v > 0.01}
             
+            colors = ['#003366', '#FFD700', '#4169e1', '#FF6B6B', '#00D9FF', '#FF8C42', '#6C5B7B']
             fig_pie = go.Figure(data=[go.Pie(
                 labels=list(series_data_prorata.keys()),
                 values=list(series_data_prorata.values()),
-                marker=dict(colors=['#003366', '#FFD700', '#4169e1']),
+                marker=dict(colors=colors[:len(series_data_prorata)]),
                 textinfo='label+percent',
                 hoverinfo='label+value+percent',
                 textposition='inside'
@@ -664,15 +680,31 @@ with tab2:
             founder_shares_current = int(final_row['Founder Shares'])
             total_shares_current = int(final_row['Total Shares'])
             
-            # Pro-rata: protected investor maintains 20% ownership
-            protected_investor_shares = int((total_shares_current * 20.0) / 100.0)
-            other_investor_shares = total_shares_current - founder_shares_current - protected_investor_shares
+            share_data_prorata = {'Founder': founder_shares_current}
             
-            share_data_prorata = {
-                'Founder': founder_shares_current,
-                'Seed (Protected)': protected_investor_shares,
-                'Other Investors': max(0, other_investor_shares)
-            }
+            # Build series share breakdown with pro-rata
+            dilution_table = st.session_state.dilution_table
+            
+            for idx, row in dilution_table.iterrows():
+                if idx > 0:
+                    curr_total = int(row['Total Shares'])
+                    
+                    if idx == 1:
+                        # With pro-rata, seed maintains 20% ownership
+                        seed_shares = int((curr_total * 20.0) / 100.0)
+                        share_data_prorata['Seed (Protected)'] = seed_shares
+                    else:
+                        prev_total = int(dilution_table.iloc[idx-1]['Total Shares'])
+                        prev_seed = int((prev_total * 20.0) / 100.0) if idx > 1 else 0
+                        
+                        # Calculate new investor shares for this round
+                        curr_investor_total = curr_total - founder_shares_current - int((curr_total * 20.0) / 100.0)
+                        prev_investor_total = prev_total - founder_shares_current - prev_seed
+                        
+                        new_shares = curr_investor_total - prev_investor_total
+                        if new_shares > 0:
+                            series_name_letter = chr(65 + idx - 2)
+                            share_data_prorata[f'Series {series_name_letter}'] = new_shares
             
             # Filter to show only positive values
             share_data_prorata = {k: v for k, v in share_data_prorata.items() if v > 0}
@@ -680,10 +712,11 @@ with tab2:
             # Convert to millions for display
             share_data_prorata_millions = {k: v/1_000_000 for k, v in share_data_prorata.items()}
             
+            colors = ['#004d80', '#FFD700', '#4169e1', '#FF6B6B', '#00D9FF', '#FF8C42', '#6C5B7B']
             fig_pie2 = go.Figure(data=[go.Pie(
                 labels=list(share_data_prorata_millions.keys()),
                 values=list(share_data_prorata_millions.values()),
-                marker=dict(colors=['#004d80', '#FFD700', '#4169e1']),
+                marker=dict(colors=colors[:len(share_data_prorata_millions)]),
                 textinfo='label+value',
                 hoverinfo='label+value+percent',
                 textposition='inside',
