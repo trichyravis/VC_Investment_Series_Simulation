@@ -416,7 +416,7 @@ with tab1:
             <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
                 <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL SHARES</p>
-                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares']):,}</h3>
+                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares'])/1_000_000:.2f} Mn</h3>
             </div>
             """, unsafe_allow_html=True)
         
@@ -606,7 +606,7 @@ with tab2:
             <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
                         padding: 20px; border-radius: 10px; text-align: center;'>
                 <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL SHARES</p>
-                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares']):,}</h3>
+                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares'])/1_000_000:.2f} Mn</h3>
             </div>
             """, unsafe_allow_html=True)
         
