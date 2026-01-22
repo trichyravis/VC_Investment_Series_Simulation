@@ -438,47 +438,139 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
         
-        # Pie Chart for Ownership
+        # Series-wise breakdown
         st.markdown("---")
+        st.markdown("#### 📊 Series-Wise Ownership Distribution")
+        
         col_pie1, col_pie2 = st.columns(2)
         
         with col_pie1:
-            st.markdown("#### Ownership Distribution")
+            st.markdown("**Ownership Distribution (%)**")
             founder_pct = final_row['Founder %']
             investor_pct = 100.0 - founder_pct
-            owner_data = {
-                'Founder': founder_pct,
-                'Investors': investor_pct
-            }
+            
+            # Create series breakdown from table
+            series_data = {}
+            series_data['Founder'] = founder_pct
+            
+            # Calculate each series' ownership
+            dilution_table = st.session_state.dilution_table
+            for idx, row in dilution_table.iterrows():
+                if idx > 0:  # Skip formation
+                    series_name = row['Round']
+                    # Calculate investor shares based on total shares
+                    if idx == 1:  # First investment round (Seed)
+                        investor_total_shares = int(row['Total Shares']) - founder_shares
+                        if investor_total_shares > 0:
+                            series_data['Seed'] = (int(row['Total Shares']) - founder_shares) / int(row['Total Shares']) * 100
+                    else:
+                        # For subsequent rounds, calculate the difference
+                        if idx > 1:
+                            prev_total = int(dilution_table.iloc[idx-1]['Total Shares'])
+                            curr_total = int(row['Total Shares'])
+                            new_shares = curr_total - prev_total
+                            if curr_total > 0:
+                                series_name_letter = chr(65 + idx - 2)  # A, B, C...
+                                series_data[f'Series {series_name_letter}'] = (new_shares / curr_total) * 100
+            
+            # Filter to show only positive values
+            series_data = {k: v for k, v in series_data.items() if v > 0.01}
+            
             fig_pie = go.Figure(data=[go.Pie(
-                labels=list(owner_data.keys()),
-                values=list(owner_data.values()),
-                marker=dict(colors=['#003366', '#FFD700']),
+                labels=list(series_data.keys()),
+                values=list(series_data.values()),
+                marker=dict(colors=['#003366', '#FFD700', '#4169e1', '#FF6B6B', '#00D9FF']),
                 textinfo='label+percent',
-                hoverinfo='label+value+percent'
+                hoverinfo='label+value+percent',
+                textposition='inside'
             )])
-            fig_pie.update_layout(height=400, showlegend=True)
+            fig_pie.update_layout(height=450, showlegend=True)
             st.plotly_chart(fig_pie, use_container_width=True)
         
         with col_pie2:
-            st.markdown("#### Share Count Distribution")
-            # Calculate investor shares
+            st.markdown("**Share Count Distribution**")
             founder_shares_current = int(final_row['Founder Shares'])
             total_shares_current = int(final_row['Total Shares'])
             investor_shares = total_shares_current - founder_shares_current
-            share_data = {
-                'Founder': founder_shares_current,
-                'Investors': investor_shares
-            }
+            
+            share_data = {'Founder': founder_shares_current}
+            
+            # Build series share breakdown
+            dilution_table = st.session_state.dilution_table
+            prev_investor_shares = 0
+            
+            for idx, row in dilution_table.iterrows():
+                if idx > 0:
+                    curr_total = int(row['Total Shares'])
+                    curr_investor = curr_total - founder_shares_current
+                    
+                    if idx == 1:
+                        share_data['Seed'] = curr_investor
+                        prev_investor_shares = curr_investor
+                    else:
+                        new_shares = curr_investor - prev_investor_shares
+                        if new_shares > 0:
+                            series_name_letter = chr(65 + idx - 2)
+                            share_data[f'Series {series_name_letter}'] = new_shares
+                        prev_investor_shares = curr_investor
+            
+            # Filter to show only positive values
+            share_data = {k: v for k, v in share_data.items() if v > 0}
+            
             fig_pie2 = go.Figure(data=[go.Pie(
                 labels=list(share_data.keys()),
                 values=list(share_data.values()),
-                marker=dict(colors=['#004d80', '#FFD700']),
+                marker=dict(colors=['#004d80', '#FFD700', '#4169e1', '#FF6B6B', '#00D9FF']),
                 textinfo='label+value',
-                hoverinfo='label+value+percent'
+                hoverinfo='label+value+percent',
+                textposition='inside'
             )])
-            fig_pie2.update_layout(height=400, showlegend=True)
+            fig_pie2.update_layout(height=450, showlegend=True)
             st.plotly_chart(fig_pie2, use_container_width=True)
+        
+        # Series-wise table breakdown
+        st.markdown("---")
+        st.markdown("#### 📋 Series-Wise Breakdown Table")
+        
+        breakdown_data = []
+        dilution_table = st.session_state.dilution_table
+        
+        for idx, row in dilution_table.iterrows():
+            if idx == 0:
+                breakdown_data.append({
+                    'Round': 'Formation',
+                    'Shares': int(row['Founder Shares']),
+                    'Ownership %': 100.0,
+                    'Valuation ($M)': row['Post-Money ($M)']
+                })
+            else:
+                if idx == 1:
+                    round_name = 'Seed'
+                else:
+                    round_name = f'Series {chr(64 + idx - 1)}'
+                
+                series_shares = int(row['Total Shares']) - founder_shares
+                if idx == 1:
+                    seed_shares = series_shares
+                    breakdown_data.append({
+                        'Round': round_name,
+                        'Shares': seed_shares,
+                        'Ownership %': (seed_shares / int(row['Total Shares'])) * 100,
+                        'Valuation ($M)': row['Post-Money ($M)']
+                    })
+                else:
+                    prev_series_shares = int(dilution_table.iloc[idx-1]['Total Shares']) - founder_shares
+                    new_round_shares = series_shares - prev_series_shares
+                    breakdown_data.append({
+                        'Round': round_name,
+                        'Shares': new_round_shares,
+                        'Ownership %': (new_round_shares / int(row['Total Shares'])) * 100,
+                        'Valuation ($M)': row['Post-Money ($M)']
+                    })
+        
+        breakdown_df = pd.DataFrame(breakdown_data)
+        st.dataframe(breakdown_df, use_container_width=True, hide_index=True)
+        
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
 
@@ -532,55 +624,100 @@ with tab2:
             </div>
             """, unsafe_allow_html=True)
         
-        # Pie Chart for Pro-Rata Protected Ownership
+        # Series-wise breakdown with Pro-Rata
         st.markdown("---")
+        st.markdown("#### 🛡️ Series-Wise Ownership Distribution (With Pro-Rata)")
+        
         col_pie1, col_pie2 = st.columns(2)
         
         with col_pie1:
-            st.markdown("#### Pro-Rata Protected Distribution")
-            founder_pct_prorata = final_row['Founder %']
-            investor_pct_prorata = 100.0 - founder_pct_prorata
-            owner_data_prorata = {
-                'Founder': founder_pct_prorata,
-                'Protected Investor': 20.0,
-                'Other Investors': investor_pct_prorata - 20.0
-            }
-            # Filter out negative values
-            owner_data_prorata = {k: v for k, v in owner_data_prorata.items() if v > 0}
-            fig_pie_prorata = go.Figure(data=[go.Pie(
-                labels=list(owner_data_prorata.keys()),
-                values=list(owner_data_prorata.values()),
+            st.markdown("**Ownership Distribution (%) - Pro-Rata Protected**")
+            founder_pct = final_row['Founder %']
+            investor_pct = 100.0 - founder_pct
+            
+            # Pro-rata scenario: early investors maintain 20%
+            series_data_prorata = {}
+            series_data_prorata['Founder'] = founder_pct
+            series_data_prorata['Seed (Protected at 20%)'] = 20.0
+            series_data_prorata['Other Investors'] = max(0, investor_pct - 20.0)
+            
+            # Filter to show only positive values
+            series_data_prorata = {k: v for k, v in series_data_prorata.items() if v > 0.01}
+            
+            fig_pie = go.Figure(data=[go.Pie(
+                labels=list(series_data_prorata.keys()),
+                values=list(series_data_prorata.values()),
                 marker=dict(colors=['#003366', '#FFD700', '#4169e1']),
                 textinfo='label+percent',
-                hoverinfo='label+value+percent'
+                hoverinfo='label+value+percent',
+                textposition='inside'
             )])
-            fig_pie_prorata.update_layout(height=400, showlegend=True)
-            st.plotly_chart(fig_pie_prorata, use_container_width=True)
+            fig_pie.update_layout(height=450, showlegend=True)
+            st.plotly_chart(fig_pie, use_container_width=True)
         
         with col_pie2:
-            st.markdown("#### Share Distribution (Pro-Rata)")
-            founder_shares_prorata = int(final_row['Founder Shares'])
-            total_shares_prorata = int(final_row['Total Shares'])
-            investor_shares_prorata = total_shares_prorata - founder_shares_prorata
-            protected_shares = max(int(investor_shares_prorata * 0.20), 1)
-            other_shares = investor_shares_prorata - protected_shares
+            st.markdown("**Share Count Distribution - Pro-Rata Protected**")
+            founder_shares_current = int(final_row['Founder Shares'])
+            total_shares_current = int(final_row['Total Shares'])
+            
+            # Pro-rata: protected investor maintains 20% ownership
+            protected_investor_shares = int((total_shares_current * 20.0) / 100.0)
+            other_investor_shares = total_shares_current - founder_shares_current - protected_investor_shares
             
             share_data_prorata = {
-                'Founder': founder_shares_prorata,
-                'Protected Investor': protected_shares,
-                'Other Investors': other_shares
+                'Founder': founder_shares_current,
+                'Seed (Protected)': protected_investor_shares,
+                'Other Investors': max(0, other_investor_shares)
             }
-            # Filter out zero or negative values
+            
+            # Filter to show only positive values
             share_data_prorata = {k: v for k, v in share_data_prorata.items() if v > 0}
-            fig_pie_prorata2 = go.Figure(data=[go.Pie(
+            
+            fig_pie2 = go.Figure(data=[go.Pie(
                 labels=list(share_data_prorata.keys()),
                 values=list(share_data_prorata.values()),
                 marker=dict(colors=['#004d80', '#FFD700', '#4169e1']),
                 textinfo='label+value',
-                hoverinfo='label+value+percent'
+                hoverinfo='label+value+percent',
+                textposition='inside'
             )])
-            fig_pie_prorata2.update_layout(height=400, showlegend=True)
-            st.plotly_chart(fig_pie_prorata2, use_container_width=True)
+            fig_pie2.update_layout(height=450, showlegend=True)
+            st.plotly_chart(fig_pie2, use_container_width=True)
+        
+        # Pro-Rata comparison table
+        st.markdown("---")
+        st.markdown("#### 🛡️ Pro-Rata Impact Comparison")
+        
+        comparison_data = []
+        dilution_table = st.session_state.dilution_table
+        
+        for idx, row in dilution_table.iterrows():
+            if idx == 0:
+                comparison_data.append({
+                    'Round': 'Formation',
+                    'With Dilution (%)': 100.0,
+                    'Pro-Rata Protected (%)': 100.0,
+                    'Difference': 0.0
+                })
+            else:
+                if idx == 1:
+                    round_name = 'Seed'
+                else:
+                    round_name = f'Series {chr(64 + idx - 1)}'
+                
+                with_dilution_pct = row['Founder %']
+                prorata_pct = row['Founder %'] + 3.0  # Pro-rata benefit estimate
+                
+                comparison_data.append({
+                    'Round': round_name,
+                    'With Dilution (%)': with_dilution_pct,
+                    'Pro-Rata Protected (%)': min(100.0, prorata_pct),
+                    'Difference': min(100.0, prorata_pct) - with_dilution_pct
+                })
+        
+        comparison_df = pd.DataFrame(comparison_data)
+        st.dataframe(comparison_df, use_container_width=True, hide_index=True)
+        
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
 
