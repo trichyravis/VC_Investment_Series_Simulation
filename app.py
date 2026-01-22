@@ -460,6 +460,22 @@ with tab_funding:
     
     st.markdown("---")
     
+    # Important Note about Pre-Money Valuation
+    st.markdown("""
+    <div style='background: #fff3cd; border-left: 4px solid #ff9800; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
+        <p style='color: #856404; margin: 0; font-weight: bold;'>ℹ️ Important: Understanding Pre-Money Valuation</p>
+        <p style='color: #856404; margin: 8px 0 0 0; font-size: 13px;'>
+            <strong>Pre-Money</strong> is the valuation negotiated for THIS round (not based on previous round's post-money).
+            <br><br>
+            <strong>Example:</strong><br>
+            • Seed: Pre-Money $8M → Post-Money $9.41M<br>
+            • Series A: Pre-Money $20M (investors negotiate this higher valuation based on company growth)<br>
+            <br>
+            💡 <strong>The valuation jump from $9.41M to $20M reflects company growth and investor demand!</strong>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     funding_data_rows = []
     
     # Create a more visually appealing layout for funding inputs
@@ -490,7 +506,7 @@ with tab_funding:
                 f"Pre-Money {round_label} ($M)",
                 min_value=0.1,
                 max_value=10000.0,
-                value=float(0.5 * (2 ** i)),
+                value=0.5 if i == 0 else 1.0,  # Simple defaults, not exponential
                 step=0.1,
                 label_visibility="collapsed",
                 key=f"pre_{i}"
@@ -503,7 +519,7 @@ with tab_funding:
                 f"Investment {round_label}",
                 min_value=0.0 if i == 0 else 0.1,
                 max_value=1000.0,
-                value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
+                value=0.0 if i == 0 else 1.0,  # Simple defaults, not exponential
                 step=0.1,
                 label_visibility="collapsed",
                 key=f"invest_{i}"
@@ -607,6 +623,56 @@ with tab_funding:
             </p>
         </div>
         """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # Add Pre-Money Valuation Explanation
+        st.markdown("#### 📈 Understanding Pre-Money Valuation Progression")
+        st.markdown("""
+        **Key Principle:** Pre-Money is negotiated fresh for each round based on company valuation at that time.
+        
+        Each investor round typically has a HIGHER pre-money than the previous round's post-money because:
+        
+        1. **Company Growth:** More customers, revenue, traction
+        2. **De-Risking:** Earlier risks are now proven
+        3. **Market Demand:** Multiple investors competing for ownership
+        4. **Investor Signal:** Seed investor success validates the business
+        """)
+        
+        # Show valuation progression with explanation
+        valuation_progression = []
+        for i in range(len(summary_df)):
+            row = summary_df.iloc[i]
+            if pd.notna(row['Pre_Money']):
+                if i == 0:
+                    prev_post = None
+                    growth = "Formation"
+                else:
+                    prev_post = summary_df.iloc[i-1]['Post_Money']
+                    if prev_post > 0:
+                        growth_multiple = row['Pre_Money'] / prev_post
+                        growth = f"{growth_multiple:.2f}x growth"
+                    else:
+                        growth = "N/A"
+                
+                valuation_progression.append({
+                    'Round': row['Round_Name'],
+                    'Pre-Money': f"${row['Pre_Money']:.2f}M",
+                    'Previous Post-Money': f"${prev_post:.2f}M" if prev_post else "N/A",
+                    'Growth Factor': growth
+                })
+        
+        if valuation_progression:
+            df_valuation = pd.DataFrame(valuation_progression)
+            st.dataframe(df_valuation, use_container_width=True, hide_index=True)
+            
+            st.markdown("""
+            **What This Shows:**
+            - Each round's Pre-Money reflects the company's increasing value
+            - Higher Pre-Money = better growth story between rounds
+            - This is NORMAL and EXPECTED in startup funding
+            """)
+
 
 if calculate_button:
     funding_df = pd.DataFrame(funding_data_rows)
