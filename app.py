@@ -456,22 +456,36 @@ with tab_about:
 
 with tab_funding:
     st.markdown("### 📊 Funding Rounds Configuration")
-    st.markdown("*Enter Pre-Money valuation and Investment amount for each round*")
+    st.markdown("*Enter Pre-Money valuation and Investment amount for each funding round*")
+    
+    st.markdown("---")
     
     funding_data_rows = []
     
+    # Create a more visually appealing layout for funding inputs
     for i in range(num_rounds):
         if i == 0:
             round_label = "Formation"
+            round_emoji = "🏢"
         elif i == 1:
             round_label = "Seed"
+            round_emoji = "🌱"
         else:
             round_label = f"Series {chr(64 + i - 1)}"
+            round_emoji = "📈"
         
-        st.write(f"**Round {i+1}: {round_label}**")
-        col_pre, col_inv = st.columns(2)
+        # Create colored box for each round
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%); 
+                    border-left: 4px solid #003366; padding: 20px; border-radius: 10px; margin-bottom: 15px;'>
+            <h4 style='margin: 0 0 15px 0; color: #003366;'>{round_emoji} Round {i+1}: {round_label}</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col_pre, col_inv, col_info = st.columns([2, 2, 1])
         
         with col_pre:
+            st.markdown(f"<p style='color: #003366; font-weight: bold; font-size: 13px;'>💰 Pre-Money Valuation ($M)</p>", unsafe_allow_html=True)
             pre_money = st.number_input(
                 f"Pre-Money {round_label} ($M)",
                 min_value=0.1,
@@ -481,8 +495,10 @@ with tab_funding:
                 label_visibility="collapsed",
                 key=f"pre_{i}"
             )
+            st.markdown(f"<p style='font-size: 11px; color: #666;'>Current: <strong>${pre_money:.2f}M</strong></p>", unsafe_allow_html=True)
         
         with col_inv:
+            st.markdown(f"<p style='color: #003366; font-weight: bold; font-size: 13px;'>💵 Investment Amount ($M)</p>", unsafe_allow_html=True)
             investment = st.number_input(
                 f"Investment {round_label}",
                 min_value=0.0 if i == 0 else 0.1,
@@ -492,6 +508,16 @@ with tab_funding:
                 label_visibility="collapsed",
                 key=f"invest_{i}"
             )
+            st.markdown(f"<p style='font-size: 11px; color: #666;'>Current: <strong>${investment:.2f}M</strong></p>", unsafe_allow_html=True)
+        
+        with col_info:
+            if investment > 0:
+                post_money = pre_money + investment
+                st.markdown(f"<p style='color: #FFD700; font-weight: bold; font-size: 13px;'>📊 Post-Money</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size: 12px; color: #003366;'><strong>${post_money:.2f}M</strong></p>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<p style='color: #FFD700; font-weight: bold; font-size: 13px;'>🎯 Status</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size: 12px; color: #666;'>Formation</p>", unsafe_allow_html=True)
         
         funding_data_rows.append({
             'Round': i + 1,
@@ -500,18 +526,87 @@ with tab_funding:
             'Investment': investment
         })
     
-    st.divider()
+    st.markdown("---")
     
-    # Display summary of entered data
+    # Display summary of entered data with enhanced styling
     if funding_data_rows:
-        st.markdown("#### 📋 Funding Summary")
+        st.markdown("#### 📋 Funding Summary Table")
+        
+        # Create enhanced summary table
         summary_df = pd.DataFrame(funding_data_rows)
-        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+        summary_df['Post_Money'] = summary_df['Pre_Money'] + summary_df['Investment']
+        summary_df['Valuation_Change'] = summary_df['Investment'] / summary_df['Pre_Money'] * 100
+        
+        # Display with professional styling
+        summary_display = summary_df[['Round', 'Round_Name', 'Pre_Money', 'Investment', 'Post_Money']].copy()
+        summary_display['Pre_Money'] = summary_display['Pre_Money'].apply(lambda x: f"${x:.2f}M")
+        summary_display['Investment'] = summary_display['Investment'].apply(lambda x: f"${x:.2f}M")
+        summary_display['Post_Money'] = summary_display['Post_Money'].apply(lambda x: f"${x:.2f}M")
+        summary_display.columns = ['#', 'Round', 'Pre-Money', 'Investment', 'Post-Money']
+        
+        st.dataframe(summary_display, use_container_width=True, hide_index=True)
+        
+        st.markdown("---")
+        
+        # Key Metrics
+        col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
         
         total_investment = summary_df['Investment'].sum()
-        st.markdown(f"**Total Investment Across All Rounds: ${total_investment:.2f}M**")
+        total_rounds = len(summary_df[summary_df['Investment'] > 0])
+        avg_investment = total_investment / total_rounds if total_rounds > 0 else 0
+        final_valuation = summary_df.iloc[-1]['Post_Money']
         
-        st.info("👈 Click CALCULATE button in sidebar, then view other tabs for results")
+        with col_metric1:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%); 
+                        padding: 15px; border-radius: 8px; text-align: center;'>
+                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL INVESTMENT</p>
+                <h3 style='color: #003366; margin: 8px 0 0 0;'>${total_investment:.2f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_metric2:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #4169e1 0%, #1e90ff 100%); 
+                        padding: 15px; border-radius: 8px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>FUNDING ROUNDS</p>
+                <h3 style='color: white; margin: 8px 0 0 0;'>{total_rounds}</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_metric3:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 15px; border-radius: 8px; text-align: center;'>
+                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>AVG PER ROUND</p>
+                <h3 style='color: #003366; margin: 8px 0 0 0;'>${avg_investment:.2f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_metric4:
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                        padding: 15px; border-radius: 8px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>FINAL VALUATION</p>
+                <h3 style='color: white; margin: 8px 0 0 0;'>${final_valuation:.2f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # Professional info box with instructions
+        st.markdown("""
+        <div style='background: #e8f4f8; border-left: 4px solid #0066cc; padding: 15px; border-radius: 5px;'>
+            <p style='margin: 0; color: #003366;'>
+                <strong>✅ Next Steps:</strong>
+            </p>
+            <p style='margin: 8px 0 0 0; color: #003366; font-size: 14px;'>
+                1. Review your funding inputs above<br>
+                2. Click <strong>CALCULATE</strong> button in the sidebar<br>
+                3. Navigate to other tabs to see detailed analysis (With Dilution, Pro-Rata Protected, Comparison, Insights)
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
 if calculate_button:
     funding_df = pd.DataFrame(funding_data_rows)
