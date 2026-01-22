@@ -456,29 +456,19 @@ with tab_about:
 
 with tab_funding:
     st.markdown("### 📊 Funding Rounds Configuration")
-    st.markdown("*Enter Pre-Money valuation and Investment amount for each funding round*")
     
-    st.markdown("---")
-    
-    # Important Note about Pre-Money Valuation
+    # Quick info box - minimal and concise
     st.markdown("""
-    <div style='background: #fff3cd; border-left: 4px solid #ff9800; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
-        <p style='color: #856404; margin: 0; font-weight: bold;'>ℹ️ Important: Understanding Pre-Money Valuation</p>
-        <p style='color: #856404; margin: 8px 0 0 0; font-size: 13px;'>
-            <strong>Pre-Money</strong> is the valuation negotiated for THIS round (not based on previous round's post-money).
-            <br><br>
-            <strong>Example:</strong><br>
-            • Seed: Pre-Money $8M → Post-Money $9.41M<br>
-            • Series A: Pre-Money $20M (investors negotiate this higher valuation based on company growth)<br>
-            <br>
-            💡 <strong>The valuation jump from $9.41M to $20M reflects company growth and investor demand!</strong>
+    <div style='background: #e8f4f8; border-left: 4px solid #003366; padding: 12px; border-radius: 5px; margin-bottom: 15px;'>
+        <p style='margin: 0; color: #003366; font-size: 13px;'>
+            <strong>Enter Pre-Money valuation and Investment amount for each round. Post-Money calculates automatically.</strong>
         </p>
     </div>
     """, unsafe_allow_html=True)
     
     funding_data_rows = []
     
-    # Create a more visually appealing layout for funding inputs
+    # Compact input layout - 2 columns for Pre-Money and Investment
     for i in range(num_rounds):
         if i == 0:
             round_label = "Formation"
@@ -490,50 +480,40 @@ with tab_funding:
             round_label = f"Series {chr(64 + i - 1)}"
             round_emoji = "📈"
         
-        # Create colored box for each round
-        st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%); 
-                    border-left: 4px solid #003366; padding: 20px; border-radius: 10px; margin-bottom: 15px;'>
-            <h4 style='margin: 0 0 15px 0; color: #003366;'>{round_emoji} Round {i+1}: {round_label}</h4>
-        </div>
-        """, unsafe_allow_html=True)
+        # Compact header
+        st.markdown(f"<h5 style='margin: 15px 0 10px 0; color: #003366;'>{round_emoji} {round_label}</h5>", unsafe_allow_html=True)
         
-        col_pre, col_inv, col_info = st.columns([2, 2, 1])
+        col1, col2, col3 = st.columns([2.5, 2.5, 1.5])
         
-        with col_pre:
-            st.markdown(f"<p style='color: #003366; font-weight: bold; font-size: 13px;'>💰 Pre-Money Valuation ($M)</p>", unsafe_allow_html=True)
+        with col1:
             pre_money = st.number_input(
-                f"Pre-Money {round_label} ($M)",
+                f"Pre-Money {round_label}",
                 min_value=0.1,
                 max_value=10000.0,
-                value=0.5 if i == 0 else 1.0,  # Simple defaults, not exponential
+                value=0.5 if i == 0 else 1.0,
                 step=0.1,
                 label_visibility="collapsed",
                 key=f"pre_{i}"
             )
-            st.markdown(f"<p style='font-size: 11px; color: #666;'>Current: <strong>${pre_money:.2f}M</strong></p>", unsafe_allow_html=True)
         
-        with col_inv:
-            st.markdown(f"<p style='color: #003366; font-weight: bold; font-size: 13px;'>💵 Investment Amount ($M)</p>", unsafe_allow_html=True)
+        with col2:
             investment = st.number_input(
                 f"Investment {round_label}",
                 min_value=0.0 if i == 0 else 0.1,
                 max_value=1000.0,
-                value=0.0 if i == 0 else 1.0,  # Simple defaults, not exponential
+                value=0.0 if i == 0 else 1.0,
                 step=0.1,
                 label_visibility="collapsed",
                 key=f"invest_{i}"
             )
-            st.markdown(f"<p style='font-size: 11px; color: #666;'>Current: <strong>${investment:.2f}M</strong></p>", unsafe_allow_html=True)
         
-        with col_info:
-            if investment > 0:
-                post_money = pre_money + investment
-                st.markdown(f"<p style='color: #FFD700; font-weight: bold; font-size: 13px;'>📊 Post-Money</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size: 12px; color: #003366;'><strong>${post_money:.2f}M</strong></p>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<p style='color: #FFD700; font-weight: bold; font-size: 13px;'>🎯 Status</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size: 12px; color: #666;'>Formation</p>", unsafe_allow_html=True)
+        with col3:
+            post_money = pre_money + investment
+            st.metric(
+                label="Post-Money",
+                value=f"${post_money:.2f}M",
+                label_visibility="collapsed"
+            )
         
         funding_data_rows.append({
             'Round': i + 1,
@@ -544,60 +524,51 @@ with tab_funding:
     
     st.markdown("---")
     
-    # Display summary of entered data with enhanced styling
+    # Summary Table - Clean and Simple
     if funding_data_rows:
-        st.markdown("#### 📋 Funding Summary Table")
-        
-        # Create enhanced summary table
         summary_df = pd.DataFrame(funding_data_rows)
         summary_df['Post_Money'] = summary_df['Pre_Money'] + summary_df['Investment']
-        summary_df['Valuation_Change'] = summary_df['Investment'] / summary_df['Pre_Money'] * 100
         
-        # Display with professional styling
-        summary_display = summary_df[['Round', 'Round_Name', 'Pre_Money', 'Investment', 'Post_Money']].copy()
+        # Create display dataframe
+        summary_display = summary_df[['Round_Name', 'Pre_Money', 'Investment', 'Post_Money']].copy()
         summary_display['Pre_Money'] = summary_display['Pre_Money'].apply(lambda x: f"${x:.2f}M")
         summary_display['Investment'] = summary_display['Investment'].apply(lambda x: f"${x:.2f}M")
         summary_display['Post_Money'] = summary_display['Post_Money'].apply(lambda x: f"${x:.2f}M")
-        summary_display.columns = ['#', 'Round', 'Pre-Money', 'Investment', 'Post-Money']
+        summary_display.columns = ['Round', 'Pre-Money', 'Investment', 'Post-Money']
         
         st.dataframe(summary_display, use_container_width=True, hide_index=True)
         
-        st.markdown("---")
-        
-        # Key Metrics
-        col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
+        # Key Metrics - 4 columns, compact
+        col1, col2, col3, col4 = st.columns(4)
         
         total_investment = summary_df['Investment'].sum()
         total_rounds = len(summary_df[summary_df['Investment'] > 0])
         avg_investment = total_investment / total_rounds if total_rounds > 0 else 0
         final_valuation = summary_df.iloc[-1]['Post_Money']
         
-        with col_metric1:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%); 
-                        padding: 15px; border-radius: 8px; text-align: center;'>
-                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL INVESTMENT</p>
-                <h3 style='color: #003366; margin: 8px 0 0 0;'>${total_investment:.2f}M</h3>
-            </div>
-            """, unsafe_allow_html=True)
+        with col1:
+            st.metric("Total Investment", f"${total_investment:.2f}M")
         
-        with col_metric2:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg, #4169e1 0%, #1e90ff 100%); 
-                        padding: 15px; border-radius: 8px; text-align: center;'>
-                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>FUNDING ROUNDS</p>
-                <h3 style='color: white; margin: 8px 0 0 0;'>{total_rounds}</h3>
-            </div>
-            """, unsafe_allow_html=True)
+        with col2:
+            st.metric("Rounds", f"{total_rounds}")
         
-        with col_metric3:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
-                        padding: 15px; border-radius: 8px; text-align: center;'>
-                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>AVG PER ROUND</p>
-                <h3 style='color: #003366; margin: 8px 0 0 0;'>${avg_investment:.2f}M</h3>
-            </div>
-            """, unsafe_allow_html=True)
+        with col3:
+            st.metric("Average/Round", f"${avg_investment:.2f}M")
+        
+        with col4:
+            st.metric("Final Valuation", f"${final_valuation:.2f}M")
+        
+        st.markdown("---")
+        
+        # Calculate Button and Instructions
+        st.markdown("""
+        <div style='background: #d4edda; border-left: 4px solid #28a745; padding: 12px; border-radius: 5px;'>
+            <p style='margin: 0; color: #155724; font-size: 13px;'>
+                <strong>✅ Ready to analyze:</strong> Click the <strong>CALCULATE</strong> button in the sidebar to view cap tables and dilution analysis.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
         
         with col_metric4:
             st.markdown(f"""
@@ -624,54 +595,7 @@ with tab_funding:
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("---")
-        
-        # Add Pre-Money Valuation Explanation
-        st.markdown("#### 📈 Understanding Pre-Money Valuation Progression")
-        st.markdown("""
-        **Key Principle:** Pre-Money is negotiated fresh for each round based on company valuation at that time.
-        
-        Each investor round typically has a HIGHER pre-money than the previous round's post-money because:
-        
-        1. **Company Growth:** More customers, revenue, traction
-        2. **De-Risking:** Earlier risks are now proven
-        3. **Market Demand:** Multiple investors competing for ownership
-        4. **Investor Signal:** Seed investor success validates the business
-        """)
-        
-        # Show valuation progression with explanation
-        valuation_progression = []
-        for i in range(len(summary_df)):
-            row = summary_df.iloc[i]
-            if pd.notna(row['Pre_Money']):
-                if i == 0:
-                    prev_post = None
-                    growth = "Formation"
-                else:
-                    prev_post = summary_df.iloc[i-1]['Post_Money']
-                    if prev_post > 0:
-                        growth_multiple = row['Pre_Money'] / prev_post
-                        growth = f"{growth_multiple:.2f}x growth"
-                    else:
-                        growth = "N/A"
-                
-                valuation_progression.append({
-                    'Round': row['Round_Name'],
-                    'Pre-Money': f"${row['Pre_Money']:.2f}M",
-                    'Previous Post-Money': f"${prev_post:.2f}M" if prev_post else "N/A",
-                    'Growth Factor': growth
-                })
-        
-        if valuation_progression:
-            df_valuation = pd.DataFrame(valuation_progression)
-            st.dataframe(df_valuation, use_container_width=True, hide_index=True)
-            
-            st.markdown("""
-            **What This Shows:**
-            - Each round's Pre-Money reflects the company's increasing value
-            - Higher Pre-Money = better growth story between rounds
-            - This is NORMAL and EXPECTED in startup funding
-            """)
+
 
 
 if calculate_button:
