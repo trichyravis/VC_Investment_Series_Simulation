@@ -87,29 +87,93 @@ st.markdown(f"""
         color: white; 
         text-align: center; 
     }}
+    
+    /* SIDEBAR STYLING - LIGHT BACKGROUND WITH DARK TEXT */
     [data-testid="stSidebar"] {{ 
-        background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%) !important; 
+        background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%) !important; 
     }}
-    [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p, [data-testid="stSidebar"] div[role="radiogroup"] p, [data-testid="stSidebar"] div[data-testid="stWidgetLabel"] p {{ 
-        color: white !important; 
-        font-weight: 600 !important; 
+    
+    /* Sidebar text - Dark for contrast */
+    [data-testid="stSidebar"] h3 {{
+        color: {DARK_BLUE} !important;
+        font-weight: 900 !important;
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 3px solid {GOLD_COLOR} !important;
     }}
-    [data-testid="stSidebar"] .st-ae div {{ 
-        color: white !important; 
+    
+    [data-testid="stSidebar"] label {{
+        color: {DARK_BLUE} !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
     }}
-    div[data-baseweb="select"] > div, input {{ 
-        color: {DARK_BLUE} !important; 
+    
+    [data-testid="stSidebar"] p {{
+        color: {DARK_BLUE} !important;
+        font-weight: 600 !important;
     }}
-    [data-testid="stSidebar"] .st-at {{ 
-        color: white !important; 
+    
+    [data-testid="stSidebar"] div[role="radiogroup"] p {{
+        color: {DARK_BLUE} !important;
+        font-weight: 600 !important;
     }}
+    
+    [data-testid="stSidebar"] div[data-testid="stWidgetLabel"] p {{
+        color: {DARK_BLUE} !important;
+        font-weight: 600 !important;
+    }}
+    
+    [data-testid="stSidebar"] .st-ae div {{
+        color: {DARK_BLUE} !important;
+    }}
+    
+    [data-testid="stSidebar"] .st-at {{
+        color: {DARK_BLUE} !important;
+    }}
+    
+    /* Metrics in sidebar */
+    [data-testid="stSidebar"] [data-testid="metric-container"] {{
+        background-color: rgba(255, 215, 0, 0.1) !important;
+        border: 2px solid {GOLD_COLOR} !important;
+        border-radius: 10px !important;
+        padding: 10px !important;
+    }}
+    
+    /* Slider styling */
+    [data-testid="stSidebar"] .stSlider {{
+        margin: 15px 0 !important;
+    }}
+    
+    /* Number input styling */
+    [data-testid="stSidebar"] input {{
+        color: {DARK_BLUE} !important;
+        font-weight: 600 !important;
+        background-color: white !important;
+        border: 2px solid {LIGHT_BLUE} !important;
+    }}
+    
+    /* Button styling */
     .stButton>button {{ 
         background-color: {GOLD_COLOR} !important; 
         color: {DARK_BLUE} !important; 
         font-weight: bold !important; 
         border-radius: 10px !important; 
-        width: 100%; 
+        width: 100%;
+        font-size: 16px !important;
+        padding: 12px !important;
     }}
+    
+    .stButton>button:hover {{
+        background-color: #FFC700 !important;
+        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4) !important;
+    }}
+    
+    /* Divider color */
+    [data-testid="stSidebar"] .st-emotion-cache-1l02zno {{
+        background-color: {DARK_BLUE} !important;
+    }}
+    
     </style>
 """, unsafe_allow_html=True)
 
@@ -124,12 +188,20 @@ st.markdown(f"<div class='hero-title'><h1>CAP TABLE SIMULATOR PRO</h1><p>Profess
 # ============================================================================
 
 with st.sidebar:
-    st.markdown("### 📊 Configuration")
+    # Main Configuration Header
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%); 
+                padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px;'>
+        <h2 style='color: white; margin: 0; font-size: 24px;'>⚙️ CONFIGURATION</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 📊 Number of Rounds")
     col_rounds1, col_rounds2 = st.columns([2, 1])
     
     with col_rounds1:
         num_rounds = st.slider(
-            "Number of Rounds",
+            "Total Rounds",
             min_value=1,
             max_value=10,
             value=3,
@@ -138,16 +210,16 @@ with st.sidebar:
         )
     
     with col_rounds2:
-        st.metric("Total Rounds", num_rounds)
+        st.metric("Rounds", num_rounds)
     
     st.divider()
     
-    st.write("### 👤 Founder's Shares")
+    st.markdown("### 👤 Founder's Shares")
     col_cap1, col_cap2 = st.columns([2, 1])
     
     with col_cap1:
         founder_capital = st.slider(
-            "Initial Shares (Millions)",
+            "Initial Shares (M)",
             min_value=1.0,
             max_value=100.0,
             value=10.0,
@@ -162,14 +234,19 @@ with st.sidebar:
     
     st.divider()
     
-    st.write("**📊 About This Tool**")
-    st.write("""
-    * Compare equity dilution
-    * Model different scenarios
-    * See ownership impact
-    * Analyze pro-rata protection
-    """)
+    st.markdown("### 📈 About This Tool")
+    st.markdown("""
+    <div style='background-color: rgba(255, 215, 0, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #FFD700;'>
+    <p style='color: #003366; margin: 0; font-weight: 600; font-size: 13px;'>
+    ✓ Compare equity dilution<br>
+    ✓ Model different scenarios<br>
+    ✓ See ownership impact<br>
+    ✓ Analyze pro-rata protection
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
     
+    st.markdown("")
     calculate_button = st.button("🧮 CALCULATE", use_container_width=True)
 
 # Funding rounds input - NOW ON MAIN PAGE
