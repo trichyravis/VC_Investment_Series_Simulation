@@ -312,16 +312,78 @@ with tab1:
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Final Valuation", f"${final_row['Post-Money ($M)']:.1f}M")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>FINAL VALUATION</p>
+                <h3 style='color: white; margin: 10px 0;'>${final_row['Post-Money ($M)']:.1f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col2:
-            st.metric("Total Shares", f"{int(final_row['Total Shares']):,}")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL SHARES</p>
+                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares']):,}</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col3:
-            st.metric("Founder %", f"{final_row['Founder %']:.2f}%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>FOUNDER %</p>
+                <h3 style='color: white; margin: 10px 0;'>{final_row['Founder %']:.2f}%</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col4:
-            st.metric("Total Dilution", f"{100 - final_row['Founder %']:.2f}%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL DILUTION</p>
+                <h3 style='color: #FFD700; margin: 10px 0;'>{100 - final_row['Founder %']:.2f}%</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Pie Chart for Ownership
+        st.markdown("---")
+        col_pie1, col_pie2 = st.columns(2)
+        
+        with col_pie1:
+            st.markdown("#### Ownership Distribution")
+            owner_data = {
+                'Founder': final_row['Founder %'],
+                'Investors': 100 - final_row['Founder %']
+            }
+            fig_pie = go.Figure(data=[go.Pie(
+                labels=list(owner_data.keys()),
+                values=list(owner_data.values()),
+                marker=dict(colors=['#003366', '#FFD700']),
+                textinfo='label+percent',
+                hoverinfo='label+value+percent'
+            )])
+            fig_pie.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie, use_container_width=True)
+        
+        with col_pie2:
+            st.markdown("#### Share Count Distribution")
+            # Calculate investor shares
+            investor_shares = int(final_row['Total Shares']) - founder_shares
+            share_data = {
+                'Founder': founder_shares,
+                'Investors': investor_shares
+            }
+            fig_pie2 = go.Figure(data=[go.Pie(
+                labels=list(share_data.keys()),
+                values=list(share_data.values()),
+                marker=dict(colors=['#004d80', '#FFD700']),
+                textinfo='label+value',
+                hoverinfo='label+value+percent'
+            )])
+            fig_pie2.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie2, use_container_width=True)
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
 
@@ -340,16 +402,79 @@ with tab2:
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Final Valuation", f"${final_row['Post-Money ($M)']:.1f}M")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>FINAL VALUATION</p>
+                <h3 style='color: white; margin: 10px 0;'>${final_row['Post-Money ($M)']:.1f}M</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col2:
-            st.metric("Total Shares", f"{int(final_row['Total Shares']):,}")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #1e90ff 0%, #4169e1 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>TOTAL SHARES</p>
+                <h3 style='color: white; margin: 10px 0;'>{int(final_row['Total Shares']):,}</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col3:
-            st.metric("Founder %", f"{final_row['Founder %']:.2f}%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #20b2aa 0%, #48d1cc 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #003366; margin: 0; font-size: 12px; font-weight: bold;'>FOUNDER %</p>
+                <h3 style='color: white; margin: 10px 0;'>{final_row['Founder %']:.2f}%</h3>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col4:
-            st.metric("Protected Ownership", "20.00%")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: #FFD700; margin: 0; font-size: 12px; font-weight: bold;'>PROTECTED OWNERSHIP</p>
+                <h3 style='color: white; margin: 10px 0;'>20.00%</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Pie Chart for Pro-Rata Protected Ownership
+        st.markdown("---")
+        col_pie1, col_pie2 = st.columns(2)
+        
+        with col_pie1:
+            st.markdown("#### Pro-Rata Protected Distribution")
+            owner_data_prorata = {
+                'Founder': final_row['Founder %'],
+                'Early Investor (Protected)': 20.0,
+                'Other Investors': 100 - final_row['Founder %'] - 20.0
+            }
+            fig_pie_prorata = go.Figure(data=[go.Pie(
+                labels=list(owner_data_prorata.keys()),
+                values=list(owner_data_prorata.values()),
+                marker=dict(colors=['#003366', '#FFD700', '#4169e1']),
+                textinfo='label+percent',
+                hoverinfo='label+value+percent'
+            )])
+            fig_pie_prorata.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie_prorata, use_container_width=True)
+        
+        with col_pie2:
+            st.markdown("#### Share Distribution (Pro-Rata)")
+            investor_shares = int(final_row['Total Shares']) - founder_shares
+            share_data_prorata = {
+                'Founder': founder_shares,
+                'Protected Investor': int(investor_shares * 0.20),
+                'Other Investors': int(investor_shares * 0.80)
+            }
+            fig_pie_prorata2 = go.Figure(data=[go.Pie(
+                labels=list(share_data_prorata.keys()),
+                values=list(share_data_prorata.values()),
+                marker=dict(colors=['#004d80', '#FFD700', '#4169e1']),
+                textinfo='label+value',
+                hoverinfo='label+value+percent'
+            )])
+            fig_pie_prorata2.update_layout(height=400, showlegend=True)
+            st.plotly_chart(fig_pie_prorata2, use_container_width=True)
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
 
