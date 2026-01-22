@@ -488,14 +488,14 @@ with tab1:
             st.plotly_chart(fig_pie, use_container_width=True)
         
         with col_pie2:
-            st.markdown("**Share Count Distribution**")
+            st.markdown("**Share Count Distribution (Millions)**")
             founder_shares_current = int(final_row['Founder Shares'])
             total_shares_current = int(final_row['Total Shares'])
             investor_shares = total_shares_current - founder_shares_current
             
             share_data = {'Founder': founder_shares_current}
             
-            # Build series share breakdown
+            # Build series share breakdown in millions
             dilution_table = st.session_state.dilution_table
             prev_investor_shares = 0
             
@@ -517,13 +517,17 @@ with tab1:
             # Filter to show only positive values
             share_data = {k: v for k, v in share_data.items() if v > 0}
             
+            # Convert to millions for display
+            share_data_millions = {k: v/1_000_000 for k, v in share_data.items()}
+            
             fig_pie2 = go.Figure(data=[go.Pie(
-                labels=list(share_data.keys()),
-                values=list(share_data.values()),
+                labels=list(share_data_millions.keys()),
+                values=list(share_data_millions.values()),
                 marker=dict(colors=['#004d80', '#FFD700', '#4169e1', '#FF6B6B', '#00D9FF']),
                 textinfo='label+value',
                 hoverinfo='label+value+percent',
-                textposition='inside'
+                textposition='inside',
+                texttemplate='<b>%{label}</b><br>%{value:.2f}Mn'
             )])
             fig_pie2.update_layout(height=450, showlegend=True)
             st.plotly_chart(fig_pie2, use_container_width=True)
@@ -656,7 +660,7 @@ with tab2:
             st.plotly_chart(fig_pie, use_container_width=True)
         
         with col_pie2:
-            st.markdown("**Share Count Distribution - Pro-Rata Protected**")
+            st.markdown("**Share Count Distribution - Pro-Rata Protected (Millions)**")
             founder_shares_current = int(final_row['Founder Shares'])
             total_shares_current = int(final_row['Total Shares'])
             
@@ -673,13 +677,17 @@ with tab2:
             # Filter to show only positive values
             share_data_prorata = {k: v for k, v in share_data_prorata.items() if v > 0}
             
+            # Convert to millions for display
+            share_data_prorata_millions = {k: v/1_000_000 for k, v in share_data_prorata.items()}
+            
             fig_pie2 = go.Figure(data=[go.Pie(
-                labels=list(share_data_prorata.keys()),
-                values=list(share_data_prorata.values()),
+                labels=list(share_data_prorata_millions.keys()),
+                values=list(share_data_prorata_millions.values()),
                 marker=dict(colors=['#004d80', '#FFD700', '#4169e1']),
                 textinfo='label+value',
                 hoverinfo='label+value+percent',
-                textposition='inside'
+                textposition='inside',
+                texttemplate='<b>%{label}</b><br>%{value:.2f}Mn'
             )])
             fig_pie2.update_layout(height=450, showlegend=True)
             st.plotly_chart(fig_pie2, use_container_width=True)
