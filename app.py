@@ -227,12 +227,11 @@ if calculate_button:
     
     try:
         st.session_state.results = {}
-        
         dilution_results = []
-        prorata_results = []
         
-        investor_shares_dilution = {f'Series {chr(64 + i)}': 0 for i in range(num_rounds)}
-        investor_shares_dilution['Founder'] = 0
+        # Start with founder's initial shares
+        founder_current_shares = founder_shares
+        total_shares = founder_shares
         
         for idx, row in funding_df.iterrows():
             pre_money = row['Pre_Money']
@@ -242,38 +241,36 @@ if calculate_button:
             post_money = calculate_post_money(pre_money, investment)
             
             if idx == 0:
-                investor_shares_dilution['Founder'] = founder_shares
-                total_shares = founder_shares
-                
+                # Formation round - just founder
                 dilution_results.append({
                     'Round': round_name,
                     'Pre-Money ($M)': pre_money,
                     'Investment ($M)': investment,
                     'Post-Money ($M)': post_money,
                     'Total Shares': total_shares,
-                    'Founder Shares': founder_shares,
+                    'Founder Shares': founder_current_shares,
                     'Founder %': 100.0
                 })
             else:
-                investor_idx = idx - 1
-                investor_name = f'Series {chr(64 + investor_idx)}'
+                # Investment rounds
+                # Calculate new investor shares based on investment and pre-money valuation
+                price_per_share = (pre_money * 1_000_000) / total_shares if total_shares > 0 else 0
+                new_investor_shares = (investment * 1_000_000) / price_per_share if price_per_share > 0 else 0
                 
-                price_per_share = calculate_price_per_share(pre_money, total_shares)
-                new_shares = calculate_new_shares(investment, price_per_share)
+                # Update total shares
+                total_shares = total_shares + new_investor_shares
                 
-                investor_shares_dilution['Founder'] = investor_shares_dilution['Founder'] * (1 - investment / post_money)
-                investor_shares_dilution[investor_name] = new_shares
-                
-                total_shares = founder_shares + sum(v for k, v in investor_shares_dilution.items() if k != 'Founder')
+                # Founder shares stay the same, but percentage decreases
+                founder_pct = calculate_ownership_pct(founder_current_shares, total_shares)
                 
                 dilution_results.append({
                     'Round': round_name,
                     'Pre-Money ($M)': pre_money,
                     'Investment ($M)': investment,
                     'Post-Money ($M)': post_money,
-                    'Total Shares': total_shares,
-                    'Founder Shares': founder_shares,
-                    'Founder %': calculate_ownership_pct(founder_shares, total_shares)
+                    'Total Shares': int(total_shares),
+                    'Founder Shares': founder_current_shares,
+                    'Founder %': founder_pct
                 })
         
         st.session_state.dilution_table = pd.DataFrame(dilution_results)
@@ -353,9 +350,11 @@ with tab1:
         
         with col_pie1:
             st.markdown("#### Ownership Distribution")
+            founder_pct = final_row['Founder %']
+            investor_pct = 100.0 - founder_pct
             owner_data = {
-                'Founder': final_row['Founder %'],
-                'Investors': 100 - final_row['Founder %']
+                'Founder': founder_pct,
+                'Investors': investor_pct
             }
             fig_pie = go.Figure(data=[go.Pie(
                 labels=list(owner_data.keys()),
@@ -370,9 +369,11 @@ with tab1:
         with col_pie2:
             st.markdown("#### Share Count Distribution")
             # Calculate investor shares
-            investor_shares = int(final_row['Total Shares']) - founder_shares
+            founder_shares_current = int(final_row['Founder Shares'])
+            total_shares_current = int(final_row['Total Shares'])
+            investor_shares = total_shares_current - founder_shares_current
             share_data = {
-                'Founder': founder_shares,
+                'Founder': founder_shares_current,
                 'Investors': investor_shares
             }
             fig_pie2 = go.Figure(data=[go.Pie(
@@ -443,11 +444,15 @@ with tab2:
         
         with col_pie1:
             st.markdown("#### Pro-Rata Protected Distribution")
+            founder_pct_prorata = final_row['Founder %']
+            investor_pct_prorata = 100.0 - founder_pct_prorata
             owner_data_prorata = {
-                'Founder': final_row['Founder %'],
-                'Early Investor (Protected)': 20.0,
-                'Other Investors': 100 - final_row['Founder %'] - 20.0
+                'Founder': founder_pct_prorata,
+                'Protected Investor': 20.0,
+                'Other Investors': investor_pct_prorata - 20.0
             }
+            # Filter out negative values
+            owner_data_prorata = {k: v for k, v in owner_data_prorata.items() if v > 0}
             fig_pie_prorata = go.Figure(data=[go.Pie(
                 labels=list(owner_data_prorata.keys()),
                 values=list(owner_data_prorata.values()),
@@ -460,12 +465,19 @@ with tab2:
         
         with col_pie2:
             st.markdown("#### Share Distribution (Pro-Rata)")
-            investor_shares = int(final_row['Total Shares']) - founder_shares
+            founder_shares_prorata = int(final_row['Founder Shares'])
+            total_shares_prorata = int(final_row['Total Shares'])
+            investor_shares_prorata = total_shares_prorata - founder_shares_prorata
+            protected_shares = max(int(investor_shares_prorata * 0.20), 1)
+            other_shares = investor_shares_prorata - protected_shares
+            
             share_data_prorata = {
-                'Founder': founder_shares,
-                'Protected Investor': int(investor_shares * 0.20),
-                'Other Investors': int(investor_shares * 0.80)
+                'Founder': founder_shares_prorata,
+                'Protected Investor': protected_shares,
+                'Other Investors': other_shares
             }
+            # Filter out zero or negative values
+            share_data_prorata = {k: v for k, v in share_data_prorata.items() if v > 0}
             fig_pie_prorata2 = go.Figure(data=[go.Pie(
                 labels=list(share_data_prorata.keys()),
                 values=list(share_data_prorata.values()),
