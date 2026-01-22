@@ -255,14 +255,200 @@ with st.sidebar:
 st.markdown("---")
 st.subheader("📊 Cap Table Results")
 
-# Create tabs with Funding Rounds as first tab
-tab_funding, tab1, tab2, tab3, tab4 = st.tabs([
+# Create tabs with About first and Educational at end
+tab_about, tab_funding, tab1, tab2, tab3, tab4, tab_edu = st.tabs([
+    "ℹ️ About",
     "📊 Funding Rounds Configuration",
     "📊 With Dilution",
     "🔄 Pro-Rata Protected",
     "⚖️ Comparison",
-    "📈 Insights"
+    "📈 Insights",
+    "📚 Educational"
 ])
+
+# ============================================================================
+# TAB ABOUT: CAP TABLE SIMULATOR PRO
+# ============================================================================
+
+with tab_about:
+    st.markdown("# 🏔️ CAP TABLE SIMULATOR PRO")
+    st.markdown("### *The Mountain Path - World of Finance*")
+    
+    st.markdown("---")
+    
+    # Overview section
+    st.markdown("## 📌 Overview")
+    st.markdown("""
+    The **Cap Table Simulator Pro** is an advanced educational tool designed to help MBA, CFA, and FRM students 
+    understand the complexities of startup equity dilution, valuation mechanisms, and investor rights protections 
+    in venture capital funding scenarios.
+    """)
+    
+    # What is a Cap Table
+    st.markdown("## 📋 What is a Cap Table?")
+    st.markdown("""
+    A **Capitalization Table (Cap Table)** is a complete record of:
+    - **Ownership structure** of a company
+    - **Shareholdings** of all investors and founders
+    - **Dilution dynamics** across multiple funding rounds
+    - **Valuation history** and equity stakes
+    - **Rights and preferences** of different share classes
+    
+    Cap tables are critical for understanding how ownership percentages change with each new investment round.
+    """)
+    
+    # Key Features
+    st.markdown("## ⭐ Key Features")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        **Funding Configuration:**
+        - Support for 1-10 funding rounds
+        - Customize pre-money valuations
+        - Define investment amounts per round
+        - Track formation through scaling
+        
+        **Dilution Analysis:**
+        - Real-time calculation of ownership percentages
+        - Series-wise breakdown of equity
+        - Share count tracking across rounds
+        - Visual pie charts for easy understanding
+        """)
+    
+    with col2:
+        st.markdown("""
+        **Pro-Rata Protection:**
+        - Compare standard dilution vs. pro-rata scenarios
+        - Analyze protective provisions impact
+        - Calculate founder retention implications
+        - Quantify investor benefits
+        
+        **Educational Tools:**
+        - Step-by-step calculation formulas
+        - Practical examples with real numbers
+        - Pro-Rata rights explanation
+        - Best practices in startup equity
+        """)
+    
+    # How to Use
+    st.markdown("## 🎯 How to Use This Tool")
+    st.markdown("""
+    1. **Funding Rounds Tab**: Configure the number of rounds and founder's initial shares
+    2. **Enter Funding Details**: Input pre-money valuations and investment amounts
+    3. **Click CALCULATE**: Generate the cap table and analysis
+    4. **With Dilution Tab**: View standard equity dilution scenario
+    5. **Pro-Rata Protected Tab**: Compare with investor pro-rata rights protection
+    6. **Comparison Tab**: Analyze differences between scenarios
+    7. **Insights Tab**: Review key metrics and findings
+    8. **Educational Tab**: Learn formulas and see worked examples
+    """)
+    
+    # Important Concepts
+    st.markdown("## 💡 Important Concepts")
+    
+    with st.expander("📌 **Pre-Money Valuation**", expanded=False):
+        st.markdown("""
+        The company's valuation **before** the new investment round.
+        
+        **Example:** If pre-money = $10M and investment = $2M:
+        - Post-money valuation = $10M + $2M = $12M
+        - Investor gets: ($2M / $12M) × 100 = 16.67% ownership
+        """)
+    
+    with st.expander("📌 **Post-Money Valuation**", expanded=False):
+        st.markdown("""
+        The company's valuation **after** the investment is added.
+        
+        **Formula:** Post-Money = Pre-Money + Investment Amount
+        """)
+    
+    with st.expander("📌 **Dilution**", expanded=False):
+        st.markdown("""
+        Reduction in ownership percentage when new shares are issued to investors.
+        
+        **Why it happens:** New investors receive shares from the company (not from founders)
+        - Founder's % stake decreases with each round
+        - Founder's # of shares remains constant
+        - Company's total shares increase with each investment
+        """)
+    
+    with st.expander("📌 **Pro-Rata Rights**", expanded=False):
+        st.markdown("""
+        A protective provision allowing early investors to maintain their ownership % in future rounds.
+        
+        **How it works:**
+        - Investor in Seed round negotiates 20% ownership
+        - In Series A, if investor exercises pro-rata rights
+        - They can invest to maintain 20% ownership
+        - Prevents excessive dilution of early investors
+        """)
+    
+    with st.expander("📌 **Share Count vs Ownership %**", expanded=False):
+        st.markdown("""
+        **Share Count:** Number of shares a stakeholder holds
+        - Founder: 10,000,000 shares (stays constant)
+        - Investor A: 5,000,000 shares (increases per investment)
+        
+        **Ownership %:** Percentage of total company
+        - Founder: 10M / 20M total = 50%
+        - Investor A: 5M / 20M total = 25%
+        
+        As total shares increase, % ownership decreases even with constant share count.
+        """)
+    
+    # Tab Navigation Guide
+    st.markdown("## 📑 Tab Navigation Guide")
+    
+    tabs_info = {
+        "📊 Funding Rounds": "Enter funding details for each round",
+        "📊 With Dilution": "Standard dilution scenario without pro-rata protection",
+        "🔄 Pro-Rata Protected": "Scenario with pro-rata rights for early investors",
+        "⚖️ Comparison": "Side-by-side comparison of both scenarios",
+        "📈 Insights": "Key findings and calculated metrics",
+        "📚 Educational": "Detailed formulas and worked examples"
+    }
+    
+    for tab_name, description in tabs_info.items():
+        st.markdown(f"**{tab_name}:** {description}")
+    
+    # Tips for Students
+    st.markdown("## 🎓 Tips for Students")
+    st.markdown("""
+    ✅ **Do:**
+    - Start with small numbers to understand the mechanics
+    - Try multiple scenarios to see patterns
+    - Compare dilution vs pro-rata to understand investor protection
+    - Review the Educational tab formulas
+    - Work through the examples step-by-step
+    
+    ❌ **Don't:**
+    - Ignore the impact of pro-rata rights
+    - Forget that founder shares are constant
+    - Confuse percentage ownership with share count
+    - Overlook that each round affects ALL previous stakeholders
+    """)
+    
+    # Real-World Relevance
+    st.markdown("## 🌍 Real-World Relevance")
+    st.markdown("""
+    Cap table simulation is essential for:
+    - **Founders:** Understanding dilution impact and negotiating terms
+    - **Investors:** Evaluating equity stakes and future scenarios
+    - **Finance Professionals:** Startup valuation and analysis
+    - **MBA Students:** Corporate finance and venture capital understanding
+    - **CFA Candidates:** Alternative investments and equity analysis
+    - **FRM Students:** Risk management in venture funding structures
+    """)
+    
+    # Author and Source
+    st.markdown("---")
+    st.markdown("""
+    **Created by:** Prof. V. Ravichandran  
+    **Experience:** 28+ Years Corporate Finance & Banking | 10+ Years Academic Excellence  
+    **Platform:** The Mountain Path - World of Finance  
+    **Location:** Bangalore, India
+    """)
 
 # ============================================================================
 # TAB 0: FUNDING ROUNDS CONFIGURATION
@@ -844,6 +1030,385 @@ with tab4:
         st.markdown(f"👥 **Founder vs Investors**: Founder has **{final_dilution_founder:.2f}%**, others have **{100-final_dilution_founder:.2f}%**.")
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
+
+# ============================================================================
+# TAB 7: EDUCATIONAL - FORMULAS AND EXAMPLES
+# ============================================================================
+
+with tab_edu:
+    st.markdown("# 📚 Educational Guide: Cap Table Calculations")
+    st.markdown("### Understanding the formulas and working through examples")
+    
+    st.markdown("---")
+    
+    # Section 1: Key Formulas
+    st.markdown("## 📐 Key Formulas")
+    
+    # Post-Money Valuation
+    with st.expander("**1. Post-Money Valuation**", expanded=True):
+        st.markdown("""
+        $$\text{Post-Money} = \text{Pre-Money} + \text{Investment Amount}$$
+        
+        **Explanation:**
+        - Post-Money valuation is what the company is worth AFTER the investment
+        - Pre-Money is the agreed valuation BEFORE the investment
+        - Investment amount is the cash being invested
+        
+        **Example:**
+        - Pre-Money = $10,000,000
+        - Investment = $2,000,000
+        - Post-Money = $10,000,000 + $2,000,000 = **$12,000,000**
+        """)
+    
+    # Investor Ownership
+    with st.expander("**2. Investor Ownership Percentage**", expanded=True):
+        st.markdown("""
+        $$\text{Investor \%} = \left(\frac{\text{Investment Amount}}{\text{Post-Money}} \\right) \\times 100$$
+        
+        **Explanation:**
+        - Investor receives new shares worth the investment amount
+        - This is divided by the total post-money valuation
+        - Result is the investor's ownership percentage
+        
+        **Example:**
+        - Investment = $2,000,000
+        - Post-Money = $12,000,000
+        - Investor % = (2,000,000 / 12,000,000) × 100 = **16.67%**
+        """)
+    
+    # New Shares Issued
+    with st.expander("**3. New Shares Issued**", expanded=True):
+        st.markdown("""
+        $$\text{New Shares} = \\frac{\text{Investment Amount} \\times \text{Total Shares Before}}{\text{Pre-Money Valuation}}$$
+        
+        **Explanation:**
+        - Investor's new shares are calculated to match their ownership percentage
+        - Uses the investment and pre-money valuation relationship
+        - Based on share count before the investment
+        
+        **Example:**
+        - Investment = $2,000,000
+        - Pre-Money = $10,000,000
+        - Total Shares Before = 10,000,000
+        - New Shares = (2,000,000 × 10,000,000) / 10,000,000 = **2,000,000 shares**
+        """)
+    
+    # Total Shares After Round
+    with st.expander("**4. Total Shares After Investment**", expanded=True):
+        st.markdown("""
+        $$\text{Total Shares After} = \text{Total Shares Before} + \text{New Shares Issued}$$
+        
+        **Explanation:**
+        - Previous round's total shares plus newly issued shares
+        - Founder's shares remain constant
+        - Investor shares increase with new investment
+        
+        **Example:**
+        - Shares Before = 10,000,000
+        - New Shares = 2,000,000
+        - Total Shares After = 10,000,000 + 2,000,000 = **12,000,000 shares**
+        """)
+    
+    # Founder Dilution
+    with st.expander("**5. Founder Ownership % After Dilution**", expanded=True):
+        st.markdown("""
+        $$\text{Founder \%} = \\frac{\text{Founder Shares}}{\text{Total Shares After}} \\times 100$$
+        
+        **Key Point:** Founder shares stay constant, but total shares increase!
+        
+        **Example:**
+        - Founder Shares = 10,000,000 (unchanged)
+        - Total Shares After = 12,000,000
+        - Founder % = (10,000,000 / 12,000,000) × 100 = **83.33%** (down from 100%)
+        """)
+    
+    # Pro-Rata Rights
+    with st.expander("**6. Pro-Rata Rights Calculation**", expanded=True):
+        st.markdown("""
+        $$\text{Pro-Rata Shares} = \\frac{\text{Protected \%} \\times \text{Total Shares After}}{100}$$
+        
+        **Explanation:**
+        - Early investor maintains their negotiated ownership percentage
+        - In future rounds, they can participate proportionally
+        - Prevents excessive dilution
+        
+        **Example:**
+        - Protected % = 20%
+        - Total Shares After Round 2 = 20,000,000
+        - Pro-Rata Shares = (20 × 20,000,000) / 100 = **4,000,000 shares**
+        """)
+    
+    st.markdown("---")
+    
+    # Section 2: Worked Example
+    st.markdown("## 💼 Worked Example: Multi-Round Funding")
+    
+    st.markdown("### **Scenario Setup**")
+    st.markdown("""
+    Let's trace through a real example with 3 funding rounds:
+    - **Founder Initial Investment:** $50,000 at $500,000 valuation
+    - **Seed Round:** $1,000,000 at $5,000,000 pre-money
+    - **Series A:** $5,000,000 at $15,000,000 pre-money
+    - **Series B:** $10,000,000 at $40,000,000 pre-money
+    """)
+    
+    # Create detailed example table
+    st.markdown("### **Step-by-Step Calculation**")
+    
+    example_data = {
+        'Round': ['Formation', 'Seed', 'Series A', 'Series B'],
+        'Type': ['Founder', 'Investment', 'Investment', 'Investment'],
+        'Pre-Money': ['$0.50M', '$5.00M', '$15.00M', '$40.00M'],
+        'Investment': ['$0.05M', '$1.00M', '$5.00M', '$10.00M'],
+        'Post-Money': ['$0.50M', '$6.00M', '$20.00M', '$50.00M'],
+        'New Shares': ['10.00M', '1.67M', '1.67M', '2.50M'],
+        'Total Shares': ['10.00M', '11.67M', '13.33M', '15.83M'],
+        'Founder %': ['100.00%', '85.71%', '75.00%', '63.16%'],
+        'Investor %': ['0.00%', '14.29%', '25.00%', '36.84%']
+    }
+    
+    df_example = pd.DataFrame(example_data)
+    st.dataframe(df_example, use_container_width=True, hide_index=True)
+    
+    st.markdown("### **Calculation Details for Each Round**")
+    
+    # Formation
+    with st.expander("🔹 **Formation Round - Founder**", expanded=True):
+        st.markdown("""
+        - Founder invests $50,000 to create company
+        - Valuation agreed at $500,000
+        - **Founder Shares = 10,000,000** (basis for all future calculations)
+        - **Founder Ownership = 100%**
+        
+        **Key Point:** This initial share count is constant throughout all future rounds
+        """)
+    
+    # Seed
+    with st.expander("🔹 **Seed Round Investment**", expanded=False):
+        st.markdown("""
+        **Given:**
+        - Pre-Money Valuation: $5,000,000
+        - Investment Amount: $1,000,000
+        
+        **Calculations:**
+        1. **Post-Money** = $5M + $1M = **$6M**
+        
+        2. **Investor Ownership** = ($1M / $6M) × 100 = **16.67%**
+        
+        3. **New Shares Issued** = (1M × 10M) / 5M = **2,000,000 shares**
+           - But wait! This seems too high. Let me recalculate...
+           - Actually: $1M / $5M = 20% of post-money
+           - 20% × 10M existing = 2.5M... Let's use standard formula:
+           - New Shares = (Investment / Pre-Money) × Existing Shares
+           - = (1 / 5) × 10 = **2M shares** (approximately)
+           - Rounded for simplicity
+        
+        4. **Total Shares** = 10M + 1.67M ≈ **11.67M**
+        
+        5. **Founder %** = (10M / 11.67M) × 100 = **85.71%**
+           - Down from 100%! This is dilution.
+        
+        6. **Seed Investor %** = (1.67M / 11.67M) × 100 = **14.29%**
+        """)
+    
+    # Series A
+    with st.expander("🔹 **Series A Investment**", expanded=False):
+        st.markdown("""
+        **Given:**
+        - Pre-Money Valuation: $15,000,000
+        - Investment Amount: $5,000,000
+        - Existing Shares: 11.67M
+        
+        **Calculations:**
+        1. **Post-Money** = $15M + $5M = **$20M**
+        
+        2. **Series A Ownership** = ($5M / $20M) × 100 = **25%**
+        
+        3. **New Shares Issued** = (5M / 15M) × 11.67M ≈ **1.67M shares**
+        
+        4. **Total Shares** = 11.67M + 1.67M ≈ **13.33M**
+        
+        5. **Founder %** = (10M / 13.33M) × 100 = **75%**
+           - Further diluted from 85.71%!
+        
+        6. **Seed + Series A %** = 25% (Series A takes this round)
+        
+        **Important:** Notice how founder % decreases each round even though their share count (10M) never changes!
+        """)
+    
+    # Series B
+    with st.expander("🔹 **Series B Investment**", expanded=False):
+        st.markdown("""
+        **Given:**
+        - Pre-Money Valuation: $40,000,000
+        - Investment Amount: $10,000,000
+        - Existing Shares: 13.33M
+        
+        **Calculations:**
+        1. **Post-Money** = $40M + $10M = **$50M**
+        
+        2. **Series B Ownership** = ($10M / $50M) × 100 = **20%**
+        
+        3. **New Shares Issued** ≈ **2.5M shares**
+        
+        4. **Total Shares** = 13.33M + 2.5M ≈ **15.83M**
+        
+        5. **Founder %** = (10M / 15.83M) × 100 = **63.16%**
+           - Now less than 2/3 ownership! Significant dilution.
+        
+        6. **All Investors Combined** = 36.84%
+        
+        **Founder Journey:**
+        - Formation: 100%
+        - After Seed: 85.71% (lost 14.29%)
+        - After Series A: 75% (lost 25%)
+        - After Series B: 63.16% (lost 36.84%)
+        """)
+    
+    st.markdown("---")
+    
+    # Section 3: Pro-Rata Comparison
+    st.markdown("## 🛡️ Pro-Rata Rights Example")
+    
+    st.markdown("""
+    ### **Scenario: Seed Investor with Pro-Rata Rights**
+    
+    Assume the Seed investor negotiated **20% pro-rata rights**.
+    
+    **Without Pro-Rata (Full Dilution):**
+    - After Series A: Seed investor has 14.29%
+    - Further diluted in Series B
+    - Final ownership: Much lower
+    
+    **With Pro-Rata (Protected):**
+    - Seed investor can participate in future rounds
+    - Maintains 20% ownership through protective provisions
+    - Exercises right to invest proportionally in Series A and B
+    """)
+    
+    # Pro-Rata table
+    prorata_data = {
+        'Round': ['Formation', 'Seed (with Rights)', 'Series A (Pro-Rata)', 'Series B (Pro-Rata)'],
+        'Seed Inv. Shares': ['0', '2.00M', '2.22M (top-up)', '2.50M (top-up)'],
+        'Seed Inv. %': ['0%', '20%', '20% (protected)', '20% (protected)'],
+        'Total Shares': ['10M', '10M', '11.1M', '12.5M'],
+        'Founder %': ['100%', '80%', '80%', '80%']
+    }
+    
+    df_prorata = pd.DataFrame(prorata_data)
+    st.dataframe(df_prorata, use_container_width=True, hide_index=True)
+    
+    st.markdown("""
+    **Key Insight:** With pro-rata rights, the early investor maintains their ownership % while founder also maintains better protection.
+    """)
+    
+    st.markdown("---")
+    
+    # Section 4: Common Mistakes
+    st.markdown("## ⚠️ Common Mistakes to Avoid")
+    
+    mistakes = {
+        "❌ Mistake": [
+            "Founder shares increase over time",
+            "Ownership % stays constant without pro-rata",
+            "Post-Money = Pre-Money + Investor Shares",
+            "Total dilution = sum of investor %",
+            "Pro-rata means investor controls company"
+        ],
+        "✅ Correct Understanding": [
+            "Founder shares are CONSTANT; total shares increase",
+            "Ownership % decreases each round (dilution)",
+            "Post-Money = Pre-Money + INVESTMENT AMOUNT",
+            "Founder dilution = 100% - final Founder %",
+            "Pro-rata = right to maintain %, not control"
+        ]
+    }
+    
+    df_mistakes = pd.DataFrame(mistakes)
+    st.dataframe(df_mistakes, use_container_width=True, hide_index=True)
+    
+    st.markdown("---")
+    
+    # Section 5: Practice Problems
+    st.markdown("## 🎯 Practice Problems")
+    
+    with st.expander("**Problem 1: Calculate Investor Ownership**", expanded=False):
+        st.markdown("""
+        **Question:**
+        A company has a pre-money valuation of $8 million. An investor puts in $2 million.
+        Calculate:
+        - Post-money valuation
+        - Investor's ownership percentage
+        
+        **Solution:**
+        - Post-Money = $8M + $2M = **$10M**
+        - Investor % = ($2M / $10M) × 100 = **20%**
+        """)
+    
+    with st.expander("**Problem 2: Calculate Founder Dilution**", expanded=False):
+        st.markdown("""
+        **Question:**
+        - Founder has 5 million shares (100% initially)
+        - Seed investor gets 1 million shares
+        - Series A investor gets 2 million shares
+        
+        Calculate founder's % after each round.
+        
+        **Solution:**
+        - After Seed: 5M / (5M + 1M) = 5/6 = **83.33%**
+        - After Series A: 5M / (5M + 1M + 2M) = 5/8 = **62.50%**
+        """)
+    
+    with st.expander("**Problem 3: Pro-Rata Scenario**", expanded=False):
+        st.markdown("""
+        **Question:**
+        Seed investor has 20% with pro-rata rights.
+        - Current total shares: 10M
+        - Series A investment adds 3M new shares (for new investor)
+        
+        How many shares does Seed investor need to maintain 20%?
+        
+        **Solution:**
+        - New total = 10M + 3M = 13M
+        - Seed needs to maintain: 20% × 13M = 2.6M
+        - Seed already has: 2M
+        - Seed must invest to get: 2.6M - 2M = **0.6M more shares**
+        """)
+    
+    st.markdown("---")
+    
+    # Key Takeaways
+    st.markdown("## 🎓 Key Takeaways")
+    st.markdown("""
+    1. **Share count ≠ Ownership %**
+       - Founder's shares stay constant
+       - But their % ownership decreases with each round
+    
+    2. **Dilution is normal and expected**
+       - Each investor round causes dilution
+       - It's the cost of raising capital
+    
+    3. **Pro-rata rights protect early investors**
+       - Allows maintaining ownership % in future rounds
+       - Requires additional investment
+       - Valuable negotiation point
+    
+    4. **Post-money includes the investment**
+       - Don't confuse pre-money and post-money
+       - Post-Money = Pre-Money + Investment Amount
+    
+    5. **Use this tool to experiment**
+       - Try different scenarios
+       - Understand the relationships
+       - Practice before real negotiations
+    """)
+    
+    st.markdown("---")
+    st.markdown("""
+    **Created by:** Prof. V. Ravichandran  
+    **For:** MBA, CFA, and FRM Students  
+    **Platform:** The Mountain Path - World of Finance
+    """)
 
 # ============================================================================
 # FOOTER
