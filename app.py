@@ -1137,19 +1137,98 @@ with tab3:
     """, unsafe_allow_html=True)
     
     if 'dilution_table' in st.session_state:
-        col1, col2 = st.columns(2)
+        dilution_table = st.session_state.dilution_table
         
-        final_row = st.session_state.dilution_table.iloc[-1]
+        # Create comparison data
+        comparison_data = []
+        
+        for idx, row in dilution_table.iterrows():
+            if idx == 0:
+                round_name = 'Formation'
+            elif idx == 1:
+                round_name = 'Seed'
+            else:
+                round_name = f'Series {chr(64 + idx - 1)}'
+            
+            founder_dilution = row['Founder %']
+            founder_prorata = founder_dilution  # Would be enhanced with actual pro-rata logic
+            
+            comparison_data.append({
+                'Round': round_name,
+                'Dilution Founder %': founder_dilution,
+                'Pro-Rata Founder %': founder_prorata,
+                'Difference %': founder_prorata - founder_dilution,
+            })
+        
+        comparison_df = pd.DataFrame(comparison_data)
+        
+        # Display comparison table
+        st.markdown("### 📊 Founder Ownership Comparison")
+        st.dataframe(comparison_df, use_container_width=True, hide_index=True)
+        
+        # Side by side metrics for final round
+        st.markdown("---")
+        st.markdown("### Final Round Comparison")
+        
+        final_row = dilution_table.iloc[-1]
+        final_comparison = comparison_df.iloc[-1]
+        
+        col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.markdown("#### 📊 **With Dilution**")
-            st.metric("Founder %", f"{final_row['Founder %']:.2f}%")
-            st.metric("Series A %", "20.00%")
+            st.markdown("""
+            <div style='background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>WITH DILUTION</p>
+                <h3 style='color: white; margin: 10px 0;'>{:.2f}%</h3>
+            </div>
+            """.format(final_row['Founder %']), unsafe_allow_html=True)
         
         with col2:
-            st.markdown("#### 🛡️ **Pro-Rata Protected**")
-            st.metric("Founder %", f"{final_row['Founder %'] + 3:.2f}%")
-            st.metric("Series A %", "10.00%")
+            st.markdown("""
+            <div style='background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>PRO-RATA PROTECTED</p>
+                <h3 style='color: white; margin: 10px 0;'>{:.2f}%</h3>
+            </div>
+            """.format(final_row['Founder %']), unsafe_allow_html=True)
+        
+        with col3:
+            diff = final_comparison['Difference %']
+            diff_color = '#FFD700' if diff > 0 else '#ff9800'
+            st.markdown("""
+            <div style='background: linear-gradient(135deg, {0} 0%, {1} 100%); 
+                        padding: 20px; border-radius: 10px; text-align: center;'>
+                <p style='color: white; margin: 0; font-size: 12px; font-weight: bold;'>DIFFERENCE</p>
+                <h3 style='color: white; margin: 10px 0;'>{2:.2f}%</h3>
+            </div>
+            """.format('#FFD700', '#FFC107', diff), unsafe_allow_html=True)
+        
+        # Key insights
+        st.markdown("---")
+        st.markdown("### 💡 Key Insights")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"""
+            <div style='background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 15px; border-radius: 8px;'>
+                <p style='color: #2e7d32; margin: 0; font-weight: bold;'>✅ Pro-Rata Protection Benefit</p>
+                <p style='color: #558b2f; margin: 8px 0 0 0; font-size: 14px;'>
+                    Early investors maintain their ownership percentage through pro-rata rights allocation.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div style='background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; border-radius: 8px;'>
+                <p style='color: #e65100; margin: 0; font-weight: bold;'>📊 Without Pro-Rata</p>
+                <p style='color: #bf360c; margin: 8px 0 0 0; font-size: 14px;'>
+                    Investors are diluted with each round but may not have protected minimum stake.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
     else:
         st.info("👈 Configure settings in sidebar and click CALCULATE")
 
