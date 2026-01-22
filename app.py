@@ -1136,13 +1136,81 @@ with tab_edu:
     
     st.markdown("---")
     
+    # Quick Formula Reference
+    st.markdown("## ⚡ Quick Formula Reference")
+    
+    formula_ref = """
+    **1. Post-Money Valuation**
+    ```
+    Post-Money = Pre-Money + Investment
+    ```
+    
+    **2. Investor Ownership %**
+    ```
+    Investor % = (Investment / Post-Money) × 100
+    ```
+    
+    **3. New Shares Issued**
+    ```
+    New Shares = (Investment × Total Shares Before) / Pre-Money
+    ```
+    
+    **4. Total Shares After**
+    ```
+    Total Shares After = Total Shares Before + New Shares
+    ```
+    
+    **5. Founder Ownership %**
+    ```
+    Founder % = (Founder Shares / Total Shares) × 100
+    ```
+    
+    **6. Pro-Rata Shares**
+    ```
+    Pro-Rata Shares = (Protected % × Total Shares) / 100
+    ```
+    """
+    
+    col_formula1, col_formula2 = st.columns(2)
+    
+    with col_formula1:
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%); 
+                    border-left: 4px solid #003366; padding: 15px; border-radius: 8px;'>
+            <p style='color: #003366; margin: 0; font-size: 13px; font-weight: bold;'>📊 VALUATION FORMULAS</p>
+            <pre style='color: #003366; font-size: 11px; margin: 8px 0 0 0;'>Post-Money = Pre-Money + Investment
+
+Investor % = (Investment / Post-Money) × 100
+
+New Shares = (Investment × Shares Before) / Pre-Money</pre>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col_formula2:
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%); 
+                    border-left: 4px solid #003366; padding: 15px; border-radius: 8px;'>
+            <p style='color: #003366; margin: 0; font-size: 13px; font-weight: bold;'>👥 OWNERSHIP FORMULAS</p>
+            <pre style='color: #003366; font-size: 11px; margin: 8px 0 0 0;'>Total Shares = Shares Before + New Shares
+
+Founder % = (Founder Shares / Total Shares) × 100
+
+Pro-Rata = (Protected % × Total Shares) / 100</pre>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
     # Section 1: Key Formulas
-    st.markdown("## 📐 Key Formulas")
+    st.markdown("## 📐 Key Formulas - Detailed Explanation")
     
     # Post-Money Valuation
     with st.expander("**1. Post-Money Valuation**", expanded=True):
         st.markdown("""
-        $$\text{Post-Money} = \text{Pre-Money} + \text{Investment Amount}$$
+        **Formula:**
+        ```
+        Post-Money Valuation = Pre-Money Valuation + Investment Amount
+        ```
         
         **Explanation:**
         - Post-Money valuation is what the company is worth AFTER the investment
@@ -1150,15 +1218,21 @@ with tab_edu:
         - Investment amount is the cash being invested
         
         **Example:**
-        - Pre-Money = $10,000,000
-        - Investment = $2,000,000
-        - Post-Money = $10,000,000 + $2,000,000 = **$12,000,000**
+        ```
+        Pre-Money Valuation  = $10,000,000
+        Investment Amount    = $2,000,000
+        ─────────────────────────────────
+        Post-Money Valuation = $12,000,000
+        ```
         """)
     
     # Investor Ownership
     with st.expander("**2. Investor Ownership Percentage**", expanded=True):
         st.markdown("""
-        $$\text{Investor \%} = \left(\frac{\text{Investment Amount}}{\text{Post-Money}} \\right) \\times 100$$
+        **Formula:**
+        ```
+        Investor % = (Investment Amount / Post-Money Valuation) × 100
+        ```
         
         **Explanation:**
         - Investor receives new shares worth the investment amount
@@ -1166,15 +1240,22 @@ with tab_edu:
         - Result is the investor's ownership percentage
         
         **Example:**
-        - Investment = $2,000,000
-        - Post-Money = $12,000,000
-        - Investor % = (2,000,000 / 12,000,000) × 100 = **16.67%**
+        ```
+        Investment Amount       = $2,000,000
+        Post-Money Valuation    = $12,000,000
+        ─────────────────────────────────────
+        Investor %              = (2,000,000 / 12,000,000) × 100
+                               = 16.67%
+        ```
         """)
     
     # New Shares Issued
     with st.expander("**3. New Shares Issued**", expanded=True):
         st.markdown("""
-        $$\text{New Shares} = \\frac{\text{Investment Amount} \\times \text{Total Shares Before}}{\text{Pre-Money Valuation}}$$
+        **Formula:**
+        ```
+        New Shares = (Investment Amount × Total Shares Before) / Pre-Money Valuation
+        ```
         
         **Explanation:**
         - Investor's new shares are calculated to match their ownership percentage
@@ -1182,16 +1263,23 @@ with tab_edu:
         - Based on share count before the investment
         
         **Example:**
-        - Investment = $2,000,000
-        - Pre-Money = $10,000,000
-        - Total Shares Before = 10,000,000
-        - New Shares = (2,000,000 × 10,000,000) / 10,000,000 = **2,000,000 shares**
+        ```
+        Investment Amount        = $2,000,000
+        Pre-Money Valuation      = $10,000,000
+        Total Shares Before      = 10,000,000
+        ─────────────────────────────────────
+        New Shares               = (2,000,000 × 10,000,000) / 10,000,000
+                               = 2,000,000 shares
+        ```
         """)
     
     # Total Shares After Round
     with st.expander("**4. Total Shares After Investment**", expanded=True):
         st.markdown("""
-        $$\text{Total Shares After} = \text{Total Shares Before} + \text{New Shares Issued}$$
+        **Formula:**
+        ```
+        Total Shares After = Total Shares Before + New Shares Issued
+        ```
         
         **Explanation:**
         - Previous round's total shares plus newly issued shares
@@ -1199,28 +1287,41 @@ with tab_edu:
         - Investor shares increase with new investment
         
         **Example:**
-        - Shares Before = 10,000,000
-        - New Shares = 2,000,000
-        - Total Shares After = 10,000,000 + 2,000,000 = **12,000,000 shares**
+        ```
+        Total Shares Before = 10,000,000
+        New Shares Issued   = 2,000,000
+        ──────────────────────────────
+        Total Shares After  = 12,000,000 shares
+        ```
         """)
     
     # Founder Dilution
     with st.expander("**5. Founder Ownership % After Dilution**", expanded=True):
         st.markdown("""
-        $$\text{Founder \%} = \\frac{\text{Founder Shares}}{\text{Total Shares After}} \\times 100$$
+        **Formula:**
+        ```
+        Founder % = (Founder Shares / Total Shares After) × 100
+        ```
         
-        **Key Point:** Founder shares stay constant, but total shares increase!
+        **Key Point:** ⚠️ Founder shares stay constant, but total shares increase!
         
         **Example:**
-        - Founder Shares = 10,000,000 (unchanged)
-        - Total Shares After = 12,000,000
-        - Founder % = (10,000,000 / 12,000,000) × 100 = **83.33%** (down from 100%)
+        ```
+        Founder Shares      = 10,000,000 (unchanged)
+        Total Shares After  = 12,000,000
+        ──────────────────────────────────
+        Founder %           = (10,000,000 / 12,000,000) × 100
+                          = 83.33% (down from 100%!)
+        ```
         """)
     
     # Pro-Rata Rights
     with st.expander("**6. Pro-Rata Rights Calculation**", expanded=True):
         st.markdown("""
-        $$\text{Pro-Rata Shares} = \\frac{\text{Protected \%} \\times \text{Total Shares After}}{100}$$
+        **Formula:**
+        ```
+        Pro-Rata Shares = (Protected % × Total Shares After) / 100
+        ```
         
         **Explanation:**
         - Early investor maintains their negotiated ownership percentage
@@ -1228,9 +1329,13 @@ with tab_edu:
         - Prevents excessive dilution
         
         **Example:**
-        - Protected % = 20%
-        - Total Shares After Round 2 = 20,000,000
-        - Pro-Rata Shares = (20 × 20,000,000) / 100 = **4,000,000 shares**
+        ```
+        Protected %             = 20%
+        Total Shares After      = 20,000,000
+        ──────────────────────────────────
+        Pro-Rata Shares         = (20 × 20,000,000) / 100
+                              = 4,000,000 shares
+        ```
         """)
     
     st.markdown("---")
