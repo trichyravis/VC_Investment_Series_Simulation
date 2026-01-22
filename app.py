@@ -249,55 +249,83 @@ with st.sidebar:
     st.markdown("")
     calculate_button = st.button("🧮 CALCULATE", use_container_width=True)
 
-# Funding rounds input - NOW ON MAIN PAGE
+# Funding rounds input - REMOVE FROM HERE
+# (Will be moved to tab)
+
 st.markdown("---")
-st.markdown("### 📊 Funding Rounds Configuration")
+st.subheader("📊 Cap Table Results")
 
-funding_data_rows = []
-
-for i in range(num_rounds):
-    if i == 0:
-        round_label = "Formation"
-    elif i == 1:
-        round_label = "Seed"
-    else:
-        round_label = f"Series {chr(64 + i - 1)}"
-    
-    st.write(f"**Round {i+1}: {round_label}**")
-    col_pre, col_inv = st.columns(2)
-    
-    with col_pre:
-        pre_money = st.number_input(
-            f"Pre-Money {round_label} ($M)",
-            min_value=0.1,
-            max_value=10000.0,
-            value=float(0.5 * (2 ** i)),
-            step=0.1,
-            label_visibility="collapsed",
-            key=f"pre_{i}"
-        )
-    
-    with col_inv:
-        investment = st.number_input(
-            f"Investment {round_label}",
-            min_value=0.0 if i == 0 else 0.1,
-            max_value=1000.0,
-            value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
-            step=0.1,
-            label_visibility="collapsed",
-            key=f"invest_{i}"
-        )
-    
-    funding_data_rows.append({
-        'Round': i + 1,
-        'Round_Name': round_label,
-        'Pre_Money': pre_money,
-        'Investment': investment
-    })
+# Create tabs with Funding Rounds as first tab
+tab_funding, tab1, tab2, tab3, tab4 = st.tabs([
+    "📊 Funding Rounds Configuration",
+    "📊 With Dilution",
+    "🔄 Pro-Rata Protected",
+    "⚖️ Comparison",
+    "📈 Insights"
+])
 
 # ============================================================================
-# MAIN CALCULATIONS
+# TAB 0: FUNDING ROUNDS CONFIGURATION
 # ============================================================================
+
+with tab_funding:
+    st.markdown("### 📊 Funding Rounds Configuration")
+    st.markdown("*Enter Pre-Money valuation and Investment amount for each round*")
+    
+    funding_data_rows = []
+    
+    for i in range(num_rounds):
+        if i == 0:
+            round_label = "Formation"
+        elif i == 1:
+            round_label = "Seed"
+        else:
+            round_label = f"Series {chr(64 + i - 1)}"
+        
+        st.write(f"**Round {i+1}: {round_label}**")
+        col_pre, col_inv = st.columns(2)
+        
+        with col_pre:
+            pre_money = st.number_input(
+                f"Pre-Money {round_label} ($M)",
+                min_value=0.1,
+                max_value=10000.0,
+                value=float(0.5 * (2 ** i)),
+                step=0.1,
+                label_visibility="collapsed",
+                key=f"pre_{i}"
+            )
+        
+        with col_inv:
+            investment = st.number_input(
+                f"Investment {round_label}",
+                min_value=0.0 if i == 0 else 0.1,
+                max_value=1000.0,
+                value=0.0 if i == 0 else float(1.5 * (2 ** (i-0.5))),
+                step=0.1,
+                label_visibility="collapsed",
+                key=f"invest_{i}"
+            )
+        
+        funding_data_rows.append({
+            'Round': i + 1,
+            'Round_Name': round_label,
+            'Pre_Money': pre_money,
+            'Investment': investment
+        })
+    
+    st.divider()
+    
+    # Display summary of entered data
+    if funding_data_rows:
+        st.markdown("#### 📋 Funding Summary")
+        summary_df = pd.DataFrame(funding_data_rows)
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+        
+        total_investment = summary_df['Investment'].sum()
+        st.markdown(f"**Total Investment Across All Rounds: ${total_investment:.2f}M**")
+        
+        st.info("👈 Click CALCULATE button in sidebar, then view other tabs for results")
 
 if calculate_button:
     funding_df = pd.DataFrame(funding_data_rows)
@@ -359,17 +387,6 @@ if calculate_button:
 # ============================================================================
 # DISPLAY RESULTS
 # ============================================================================
-
-st.write("")
-st.write("---")
-st.subheader("📊 Cap Table Results")
-
-tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 With Dilution",
-    "🔄 Pro-Rata Protected",
-    "⚖️ Comparison",
-    "📈 Insights"
-])
 
 # ============================================================================
 # TAB 1: WITH DILUTION
