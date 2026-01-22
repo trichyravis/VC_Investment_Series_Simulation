@@ -77,6 +77,45 @@ def calculate_ownership_pct(investor_shares, total_shares):
 
 st.markdown(f"""
     <style>
+    /* ============ TAB STYLING ============ */
+    button[kind="tab"] {{
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        padding: 12px 20px !important;
+        color: {DARK_BLUE} !important;
+        border-radius: 10px 10px 0 0 !important;
+        background-color: #f0f4f8 !important;
+        border: 2px solid #e0e8f0 !important;
+        margin: 0 2px !important;
+        transition: all 0.3s ease !important;
+    }}
+    
+    button[kind="tab"]:hover {{
+        background-color: #e0e8f0 !important;
+        border-color: {LIGHT_BLUE} !important;
+        color: {LIGHT_BLUE} !important;
+        transform: translateY(-2px) !important;
+    }}
+    
+    button[kind="tab"][aria-selected="true"] {{
+        background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%) !important;
+        color: white !important;
+        border: 2px solid {DARK_BLUE} !important;
+        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3) !important;
+        font-weight: 800 !important;
+    }}
+    
+    /* ============ TAB CONTENT STYLING ============ */
+    [data-testid="stTabContent"] {{
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        padding: 2rem !important;
+        border-radius: 0 10px 10px 10px !important;
+        border: 2px solid #e0e8f0 !important;
+        box-shadow: 0 4px 15px rgba(0, 51, 102, 0.08) !important;
+        min-height: 500px !important;
+    }}
+    
+    /* ============ HERO TITLE STYLING ============ */
     .hero-title {{ 
         background: linear-gradient(135deg, {DARK_BLUE} 0%, {LIGHT_BLUE} 100%); 
         padding: 2rem; 
@@ -88,7 +127,7 @@ st.markdown(f"""
         text-align: center; 
     }}
     
-    /* SIDEBAR STYLING - LIGHT BACKGROUND WITH DARK TEXT */
+    /* ============ SIDEBAR STYLING ============ */
     [data-testid="stSidebar"] {{ 
         background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%) !important; 
     }}
@@ -271,10 +310,20 @@ tab_about, tab_funding, tab1, tab2, tab3, tab4, tab_edu = st.tabs([
 # ============================================================================
 
 with tab_about:
-    st.markdown("# 🏔️ CAP TABLE SIMULATOR PRO")
-    st.markdown("### *The Mountain Path - World of Finance*")
-    
-    st.markdown("---")
+    # Beautiful header for About tab
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 30px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3); text-align: center;'>
+        <h1 style='color: white; margin: 0; font-size: 36px;'>🏔️ CAP TABLE SIMULATOR PRO</h1>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 18px; font-weight: 600;'>
+            The Mountain Path - World of Finance
+        </p>
+        <p style='color: #e8f0f7; margin: 8px 0 0 0; font-size: 14px;'>
+            Master Startup Equity Dilution & Valuation
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Overview section
     st.markdown("## 📌 Overview")
@@ -455,13 +504,23 @@ with tab_about:
 # ============================================================================
 
 with tab_funding:
-    st.markdown("### 📊 Funding Rounds Configuration")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>📊 Funding Rounds Configuration</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            Enter your funding details • Post-Money calculates automatically
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Quick info box - minimal and concise
     st.markdown("""
-    <div style='background: #e8f4f8; border-left: 4px solid #003366; padding: 12px; border-radius: 5px; margin-bottom: 15px;'>
+    <div style='background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f7 100%); border-left: 5px solid #003366; padding: 15px; border-radius: 8px; margin-bottom: 20px;'>
         <p style='margin: 0; color: #003366; font-size: 13px;'>
-            <strong>Enter Pre-Money valuation and Investment amount for each round. Post-Money calculates automatically.</strong>
+            <strong>💡 Tip:</strong> Enter Pre-Money valuation and Investment amount for each round. Post-Money calculates automatically.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -638,8 +697,17 @@ if calculate_button:
 # ============================================================================
 
 with tab1:
-    st.markdown("### 📊 Cap Table with Dilution Scenario")
-    st.markdown("*Founder and investors are diluted with each new round*")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>📊 With Dilution Scenario</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            Full dilution analysis • Founder and investor ownership decreases each round
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if 'dilution_table' in st.session_state:
         st.dataframe(st.session_state.dilution_table, use_container_width=True)
@@ -828,8 +896,17 @@ with tab1:
 # ============================================================================
 
 with tab2:
-    st.markdown("### 🛡️ Cap Table with Pro-Rata Protection")
-    st.markdown("*Early investors maintain ownership through pro-rata rights*")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>🛡️ Pro-Rata Protected Scenario</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            Early investors maintain ownership • Protection through pro-rata rights
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if 'dilution_table' in st.session_state:
         st.dataframe(st.session_state.dilution_table, use_container_width=True)
@@ -1012,7 +1089,17 @@ with tab2:
 # ============================================================================
 
 with tab3:
-    st.markdown("### ⚖️ Comparison: With vs Without Pro-Rata")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>⚖️ Comparison Analysis</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            With Dilution vs Pro-Rata Protected • See the difference pro-rata rights make
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if 'dilution_table' in st.session_state:
         col1, col2 = st.columns(2)
@@ -1036,7 +1123,17 @@ with tab3:
 # ============================================================================
 
 with tab4:
-    st.markdown("### 📈 Key Insights & Analysis")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>📈 Key Insights & Analysis</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            Key metrics • Dilution analysis • Pro-rata benefits
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if 'dilution_table' in st.session_state:
         final_row = st.session_state.dilution_table.iloc[-1]
@@ -1095,10 +1192,19 @@ with tab4:
 # ============================================================================
 
 with tab_edu:
-    st.markdown("# 📚 Educational Guide: Cap Table Calculations")
-    st.markdown("### Understanding the formulas and working through examples")
+    # Beautiful header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #003366 0%, #004d80 100%); 
+                padding: 25px; border-radius: 15px; margin-bottom: 25px; 
+                box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);'>
+        <h2 style='color: white; margin: 0; font-size: 28px;'>📚 Educational Guide</h2>
+        <p style='color: #FFD700; margin: 10px 0 0 0; font-size: 14px; font-weight: 600;'>
+            Learn cap table calculations • Formulas • Worked examples • Practice problems
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("---")
+    st.markdown("### Understanding Cap Table Calculations")
     
     # Quick Formula Reference
     st.markdown("## ⚡ Quick Formula Reference")
